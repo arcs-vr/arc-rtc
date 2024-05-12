@@ -5,7 +5,6 @@
   "description": "Corporate design elements for all ARCS projects and tools.",
   "repository": "git@github.com:arcs-vr/arc-cd.git",
   "author": "Barthy Bonhomme <post@barthy.koeln>",
-  "private": false,
   "keywords": [
     "aframe",
     "aframe-controls",
