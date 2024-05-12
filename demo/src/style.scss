@@ -1,0 +1,82 @@
+@import "@arcs/design";
+
+:root {
+  $spacer: 1rem;
+
+  // SIZES
+  --spacer: #{$spacer};
+
+  --animation-duration: .3s;
+  --animation-easing: ease;
+
+  --spacer-1: #{0.35 * $spacer};
+  --spacer-2: #{0.5 * $spacer};
+  --spacer-3: #{1.0 * $spacer};
+  --spacer-4: #{1.5 * $spacer};
+  --spacer-5: #{2 * $spacer};
+}
+
+*,
+*::before,
+*::after {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  font-style: normal;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+html,
+body {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  height: auto;
+  min-height: 100%;
+}
+
+body {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading {
+  font-family: var(--font-heading);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+}
+
+body,
+a,
+p,
+.font-paragraph {
+  font-family: var(--font-paragraph);
+  font-style: var(--font-paragraph-style);
+  font-weight: var(--font-paragraph-weight);
+}
+
+a {
+  color: var(--color-secondary);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--animation-duration) var(--animation-easing);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

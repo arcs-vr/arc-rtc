@@ -1,0 +1,28 @@
+@import "@fontsource/fira-sans/latin-300.css";
+@import "@fontsource/fira-sans/latin-ext-300.css";
+@import "@fontsource/fira-sans/latin-700.css";
+@import "@fontsource/fira-sans/latin-ext-700.css";
+
+:root {
+  --color-dark: #333;
+  --color-dark-25p-lighter: #737373;
+  --color-dark-50p-lighter: #b3b3b3;
+
+  --color-light: #fff;
+
+  --color-primary: #ef8f9d;
+  --color-primary-25p-desaturated: #f0c0c7;
+
+  --color-secondary: #95e4f9;
+  --color-secondary-25p-desaturated: #d4f2fa;
+
+  --font-heading: "Fira Sans", sans-serif;
+  --font-heading-weight: 700;
+  --font-heading-style: normal;
+
+  --font-paragraph: "Fira Sans", sans-serif;
+  --font-paragraph-style: normal;
+  --font-paragraph-weight: 300;
+
+  --bp-desktop: 1200px;
+}

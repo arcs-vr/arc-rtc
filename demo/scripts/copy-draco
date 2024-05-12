@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+BASE_PATH="../node_modules/three/examples/jsm/libs/draco/gltf"
+TARGET="./public/draco"
+
+mkdir -p ./public/draco
+cp "$BASE_PATH/draco_decoder.wasm" "$TARGET"
+cp "$BASE_PATH/draco_wasm_wrapper.js" "$TARGET"
+

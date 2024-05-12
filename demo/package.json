@@ -1,0 +1,35 @@
+{
+  "name": "@arcs/demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "copy:draco": "scripts/copy-draco"
+  },
+  "dependencies": {
+    "@arcs/design": "^0.0.1",
+    "@tweenjs/tween.js": "^23.1.2",
+    "draco3d": "^1.5.7",
+    "peerjs": "^1.5.2",
+    "qr-scanner": "^1.4.2",
+    "qrcode": "^1.5.3",
+    "sass": "^1.77.1",
+    "three": "^0.164.1",
+    "three-mesh-bvh": "^0.7.4",
+    "three-pathfinding": "^1.2.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "@types/three": "^0.164.0",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.6"
+  }
+}
