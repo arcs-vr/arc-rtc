@@ -1,26 +1,26 @@
 <template>
-<div class="PRemote">
-  <p>remote</p>
+  <div class="PRemote">
+    <p>remote</p>
 
-  <Transition name="fade">
-    <span v-if="secret">{{ secret }}</span>
+    <Transition name="fade">
+      <span v-if="secret">{{ secret }}</span>
 
-    <video
-      v-else
-      ref="qrCamera"
-      class="PRemote__video"
-    ></video>
-  </Transition>
-</div>
+      <video
+        v-else
+        ref="qrCamera"
+        class="PRemote__video"
+      ></video>
+    </Transition>
+  </div>
 </template>
 
 <script
-  setup
   lang="ts"
+  setup
 >
-import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
-import { Peer } from 'peerjs'
-import QrScanner from 'qr-scanner';
+import {nextTick, onBeforeUnmount, onMounted, shallowRef} from 'vue'
+import {Peer} from 'peerjs'
+import QrScanner from 'qr-scanner'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
@@ -35,7 +35,7 @@ onMounted(async () => {
     qrCamera.value,
     onQRScanned,
     {},
-  );
+  )
 
   console.info(cameras)
 
@@ -55,28 +55,28 @@ function onQRScanned(result) {
 
 const peer = shallowRef<Peer>()
 
-function connect(){
-  if(!peer.value) {
-    peer.value = new Peer({ secure: true, debug: 3 })
+function connect() {
+  if (!peer.value) {
+    peer.value = new Peer({secure: true, debug: 3})
   }
 
-  const conn = peer.connect(secret.value);
+  const conn = peer.connect(secret.value)
   // on open will be launch when you successfully connect to PeerServer
-  conn.on('open', function(id){
+  conn.on('open', function (id) {
     console.info(id, conn)
     // here you have conn.id
-    conn.send('remote connected');
-  });
+    conn.send('remote connected')
+  })
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .PRemote {
 
   &__video {
-    width: 80vw;
     height: 80vw;
     object-fit: cover;
+    width: 80vw;
   }
 }
 </style>

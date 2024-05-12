@@ -1,18 +1,18 @@
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-let loader: GLTFLoader|undefined
+let loader: GLTFLoader | undefined
 
-export function useCompressedGLTFLoader () {
-  if(!loader){
-    loader = new GLTFLoader()
+export function useCompressedGLTFLoader() {
+    if (!loader) {
+        loader = new GLTFLoader()
 
-    const dracoLoader = new DRACOLoader()
-    dracoLoader.setDecoderPath(`${import.meta.env.BASE_URL}draco/`)
-    dracoLoader.preload()
+        const dracoLoader = new DRACOLoader()
+        dracoLoader.setDecoderPath(`${import.meta.env.BASE_URL}draco/`)
+        dracoLoader.preload()
 
-    loader.setDRACOLoader(dracoLoader)
-  }
+        loader.setDRACOLoader(dracoLoader)
+    }
 
-  return loader
+    return loader
 }
