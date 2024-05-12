@@ -1,0 +1,40 @@
+@use 'sass:math';
+
+@mixin hover-keyframes($name, $distance, $duration: 4s, $easing: ease, $delay: .2s) {
+  animation: $name $duration $easing $delay infinite;
+  will-change: transform;
+
+  @keyframes #{$name} {
+    0%, 100% {
+      transform: translate3d(0, $distance, 0);
+    }
+
+    50%, 90% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+}
+
+.logo {
+  $layers-count: 5;
+  $offset-total: 30%;
+  $offset-correction: math.div($offset-total, 2);
+  $offset-layers-max: math.pow($layers-count, 2);
+
+  @include hover-keyframes(logo, -$offset-correction);
+
+  overflow: visible;
+
+  @for $index from 0 through ($layers-count - 1) {
+    .layer-#{$index} {
+      $base: math.pow($index + 1, 2);
+      $percentage: math.div($base, $offset-layers-max);
+      $offset: $percentage * $offset-total;
+      @include hover-keyframes(layer-#{$index}, $offset);
+    }
+  }
+
+  .base {
+    @include hover-keyframes(base, $offset-total);
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@arcs/design",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Corporate design elements for all ARCS projects and tools.",
+  "repository": "git@github.com:arcs-vr/arc-cd.git",
+  "author": "Barthy Bonhomme <post@barthy.koeln>",
+  "private": false,
+  "keywords": [
+    "aframe",
+    "aframe-controls",
+    "ARCS",
+    "MQTT",
+    "proxy",
+    "remote",
+    "socket",
+    "VR",
+    "WebXR",
+    "WebVR",
+    "websocket",
+    "WebRTC"
+  ],
+  "desktop": "./src/cd.scss",
+  "style": "./src/cd.scss",
+  "main": "./src/cd.scss",
+  "dependencies": {
+    "@fontsource/fira-sans": "^5.0.20"
+  }
+}
