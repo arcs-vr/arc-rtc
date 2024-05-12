@@ -1,16 +1,16 @@
 <template>
-    <Suspense>
-      <ParcourCanvas/>
+  <Suspense>
+    <ParcourCanvas/>
 
-      <template #fallback>
-        <LoadingAnimation width="500px" height="500px"/>
-      </template>
-    </Suspense>
+    <template #fallback>
+      <LoadingAnimation height="500px" width="500px"/>
+    </template>
+  </Suspense>
 </template>
 
 <script
-  setup
   lang="ts"
+  setup
 >
 import ParcourCanvas from '../components/ParcourCanvas.vue'
 import LoadingAnimation from '../components/LoadingAnimation.vue'

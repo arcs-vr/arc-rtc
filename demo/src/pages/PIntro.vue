@@ -9,10 +9,10 @@
 </template>
 
 <script
-  setup
   lang="ts"
+  setup
 >
-import { ROUTE_PARCOUR, ROUTE_REMOTE } from '../routes.ts'
+import {ROUTE_PARCOUR, ROUTE_REMOTE} from '../routes.ts'
 </script>
 
 <style scoped>

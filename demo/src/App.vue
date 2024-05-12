@@ -1,6 +1,6 @@
 <template>
   <main class="ArcRTC">
-    <RouterView />
+    <RouterView/>
   </main>
 </template>
 

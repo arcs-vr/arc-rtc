@@ -1,13 +1,13 @@
 <template>
   <label for="peer-id">Peer ID</label>
-  <output name="peer-id" id="peer-id">
+  <output id="peer-id" name="peer-id">
     <img :src="qrData" alt=""/>
   </output>
 </template>
 
 <script
-  setup
   lang="ts"
+  setup
 >
 defineProps<{
   qrData: string

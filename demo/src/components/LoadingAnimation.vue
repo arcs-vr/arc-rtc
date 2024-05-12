@@ -2,7 +2,7 @@
   <div v-html="arcLogo"/>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import arcLogo from '@arcs/design/images/arc-logo.svg?raw'
 </script>
 
