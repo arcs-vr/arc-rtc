@@ -1,17 +1,58 @@
-import {Pathfinding} from 'three-pathfinding'
-import {useCompressedGLTFLoader} from './useCompressedGLTFLoader.ts'
+import { useCompressedGLTFLoader } from './useCompressedGLTFLoader.ts'
+import { Mesh, Raycaster, Vector3 } from 'three'
 
-export async function usePathfinding(url: string) {
-    const gltfLoader = useCompressedGLTFLoader()
-    const navMesh = await gltfLoader.loadAsync(url)
-    const pathfinding = new Pathfinding()
+export type Pathfinding = Awaited<ReturnType<typeof usePathfinding>>
 
-    const geometry = navMesh.scene.getObjectByName('nav_mesh')?.geometry
-    if (!geometry) {
-        throw new Error('Nav Mesh Geometry not found')
+export async function usePathfinding (url: string) {
+  const gltfLoader = useCompressedGLTFLoader()
+
+  const navMesh = await gltfLoader.loadAsync(url)
+  const materialWalkable = navMesh.scene.getObjectByName('rooms').material
+
+  const raycaster = new Raycaster(undefined, undefined, 0, 24)
+  const down = new Vector3(0, -1, 0)
+  const minDistanceToFloor = 0.1
+
+  const intersections = []
+
+  raycaster.firstHitOnly = true
+  navMesh.scene.traverse(child => {
+    if (child instanceof Mesh) {
+      child.geometry.computeBoundsTree()
+    }
+  })
+
+  /**
+   * Target is next player body position at feet
+   * @param target
+   */
+  function allowStep (target: Vector3) {
+    raycaster.set(target, down)
+    intersections.length = 0
+
+    raycaster.intersectObjects(navMesh.scene.children, false, intersections)
+    if (intersections.length === 0) {
+      return false
+    }
+    
+    if (intersections[0].object.material.name !== 'nav_mesh_walkable') {
+      return false
     }
 
-    pathfinding.setZoneData('level1', Pathfinding.createZone(geometry))
+    return intersections[0].distance >= minDistanceToFloor
+  }
 
-    return pathfinding
+  function makeDoorWalkable (which: string) {
+    const door = navMesh.scene.getObjectByName(which)
+
+    if (door instanceof Mesh) {
+      door.material = materialWalkable
+    }
+  }
+
+  return {
+    navMesh,
+    allowStep,
+    makeDoorWalkable
+  }
 }

@@ -14,14 +14,54 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				0
+				0,
+				1,
+				2,
+				3,
+				4
 			]
 		}
 	],
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"nav_mesh",
+			"name":"rooms",
+			"translation":[
+				-12.38318157196045,
+				0.35959547758102417,
+				-1.0301250219345093
+			]
+		},
+		{
+			"mesh":1,
+			"name":"door_2",
+			"translation":[
+				-12.38318157196045,
+				0.35959547758102417,
+				-1.0301250219345093
+			]
+		},
+		{
+			"mesh":2,
+			"name":"door_4",
+			"translation":[
+				-12.38318157196045,
+				0.35959547758102417,
+				-1.0301250219345093
+			]
+		},
+		{
+			"mesh":3,
+			"name":"door_1",
+			"translation":[
+				-12.38318157196045,
+				0.35959547758102417,
+				-1.0301250219345093
+			]
+		},
+		{
+			"mesh":4,
+			"name":"door_3",
 			"translation":[
 				-12.38318157196045,
 				0.35959547758102417,
@@ -82,7 +122,12 @@
 					"indices":3,
 					"material":0,
 					"mode":4
-				},
+				}
+			]
+		},
+		{
+			"name":"nav_mesh.001",
+			"primitives":[
 				{
 					"attributes":{
 						"POSITION":4,
@@ -104,16 +149,91 @@
 					"mode":4
 				}
 			]
+		},
+		{
+			"name":"nav_mesh.002",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":8,
+						"NORMAL":9,
+						"TEXCOORD_0":10
+					},
+					"extensions":{
+						"KHR_draco_mesh_compression":{
+							"bufferView":2,
+							"attributes":{
+								"POSITION":0,
+								"NORMAL":1,
+								"TEXCOORD_0":2
+							}
+						}
+					},
+					"indices":11,
+					"material":1,
+					"mode":4
+				}
+			]
+		},
+		{
+			"name":"nav_mesh.003",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":12,
+						"NORMAL":13,
+						"TEXCOORD_0":14
+					},
+					"extensions":{
+						"KHR_draco_mesh_compression":{
+							"bufferView":3,
+							"attributes":{
+								"POSITION":0,
+								"NORMAL":1,
+								"TEXCOORD_0":2
+							}
+						}
+					},
+					"indices":15,
+					"material":1,
+					"mode":4
+				}
+			]
+		},
+		{
+			"name":"nav_mesh.004",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":16,
+						"NORMAL":17,
+						"TEXCOORD_0":18
+					},
+					"extensions":{
+						"KHR_draco_mesh_compression":{
+							"bufferView":4,
+							"attributes":{
+								"POSITION":0,
+								"NORMAL":1,
+								"TEXCOORD_0":2
+							}
+						}
+					},
+					"indices":19,
+					"material":1,
+					"mode":4
+				}
+			]
 		}
 	],
 	"accessors":[
 		{
 			"componentType":5126,
-			"count":560,
+			"count":335,
 			"max":[
 				316.2187805175781,
-				5.641297340393066,
-				50.03012466430664
+				5.626152992248535,
+				50.02653121948242
 			],
 			"min":[
 				-189.28347778320312,
@@ -124,29 +244,29 @@
 		},
 		{
 			"componentType":5126,
-			"count":560,
+			"count":335,
 			"type":"VEC3"
 		},
 		{
 			"componentType":5126,
-			"count":560,
+			"count":335,
 			"type":"VEC2"
 		},
 		{
 			"componentType":5123,
-			"count":852,
+			"count":801,
 			"type":"SCALAR"
 		},
 		{
 			"componentType":5126,
-			"count":18,
+			"count":16,
 			"max":[
-				217.42706298828125,
-				-0.35959500074386597,
-				5.772830009460449
+				13.628128051757812,
+				-0.35977381467819214,
+				5.766958236694336
 			],
 			"min":[
-				-90.64065551757812,
+				11.653694152832031,
 				-0.35977381467819214,
 				-3.729116439819336
 			],
@@ -154,35 +274,140 @@
 		},
 		{
 			"componentType":5126,
-			"count":18,
+			"count":16,
 			"type":"VEC3"
 		},
 		{
 			"componentType":5126,
-			"count":18,
+			"count":16,
 			"type":"VEC2"
 		},
 		{
 			"componentType":5123,
-			"count":24,
+			"count":60,
+			"type":"SCALAR"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"max":[
+				217.42706298828125,
+				-0.35977381467819214,
+				5.748154640197754
+			],
+			"min":[
+				215.33981323242188,
+				-0.35977381467819214,
+				-3.4658589363098145
+			],
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC2"
+		},
+		{
+			"componentType":5123,
+			"count":60,
+			"type":"SCALAR"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"max":[
+				-88.62861633300781,
+				-0.35977381467819214,
+				5.766958236694336
+			],
+			"min":[
+				-90.64065551757812,
+				-0.35977381467819214,
+				-3.6915082931518555
+			],
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC2"
+		},
+		{
+			"componentType":5123,
+			"count":60,
+			"type":"SCALAR"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"max":[
+				115.43357849121094,
+				-0.35977381467819214,
+				5.766958236694336
+			],
+			"min":[
+				113.3463134765625,
+				-0.35977381467819214,
+				-3.4658589363098145
+			],
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC3"
+		},
+		{
+			"componentType":5126,
+			"count":16,
+			"type":"VEC2"
+		},
+		{
+			"componentType":5123,
+			"count":60,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":3009,
+			"byteLength":1955,
 			"byteOffset":0
 		},
 		{
 			"buffer":0,
-			"byteLength":271,
-			"byteOffset":3012
+			"byteLength":196,
+			"byteOffset":1956
+		},
+		{
+			"buffer":0,
+			"byteLength":216,
+			"byteOffset":2152
+		},
+		{
+			"buffer":0,
+			"byteLength":222,
+			"byteOffset":2368
+		},
+		{
+			"buffer":0,
+			"byteLength":225,
+			"byteOffset":2592
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":3284,
+			"byteLength":2820,
 			"uri":"nav_mesh.bin"
 		}
 	]
