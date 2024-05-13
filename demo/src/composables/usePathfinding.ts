@@ -1,57 +1,61 @@
-import { useCompressedGLTFLoader } from './useCompressedGLTFLoader.ts'
-import { Mesh, Raycaster, Vector3 } from 'three'
+import { Material, Mesh, Raycaster, Vector3 } from 'three'
+import { TOLERANCE } from '../config.ts'
+import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import roomsNavMeshUrl from '../assets/models/numbers/nav_mesh.gltf?url'
 
-export type Pathfinding = Awaited<ReturnType<typeof usePathfinding>>
+let navMeshes: Mesh[]
+let materialWalkable: Material
 
-export async function usePathfinding (url: string) {
-  const gltfLoader = useCompressedGLTFLoader()
+const raycaster = new Raycaster(undefined, undefined, 0, 24)
+raycaster.firstHitOnly = true
 
-  const navMesh = await gltfLoader.loadAsync(url)
-  const materialWalkable = navMesh.scene.getObjectByName('rooms').material
+const down = new Vector3(0, -1, 0)
+const intersections = []
 
-  const raycaster = new Raycaster(undefined, undefined, 0, 24)
-  const down = new Vector3(0, -1, 0)
-  const minDistanceToFloor = 0.1
+/**
+ * Target is next player body position at feet
+ */
+function allowStep (target: Vector3, pointOnMesh: Vector3) {
+  raycaster.set(target, down)
+  intersections.length = 0
 
-  const intersections = []
-
-  raycaster.firstHitOnly = true
-  navMesh.scene.traverse(child => {
-    if (child instanceof Mesh) {
-      child.geometry.computeBoundsTree()
-    }
-  })
-
-  /**
-   * Target is next player body position at feet
-   * @param target
-   */
-  function allowStep (target: Vector3) {
-    raycaster.set(target, down)
-    intersections.length = 0
-
-    raycaster.intersectObjects(navMesh.scene.children, false, intersections)
-    if (intersections.length === 0) {
-      return false
-    }
-    
-    if (intersections[0].object.material.name !== 'nav_mesh_walkable') {
-      return false
-    }
-
-    return intersections[0].distance >= minDistanceToFloor
+  raycaster.intersectObjects(navMeshes, false, intersections)
+  if (intersections.length === 0) {
+    return false
   }
 
-  function makeDoorWalkable (which: string) {
-    const door = navMesh.scene.getObjectByName(which)
-
-    if (door instanceof Mesh) {
-      door.material = materialWalkable
-    }
+  if (intersections[0].object.material.name !== 'nav_mesh_walkable') {
+    return false
   }
+
+  pointOnMesh.copy(intersections[0].point)
+
+  return intersections[0].distance >= TOLERANCE
+}
+
+function makeDoorWalkable (which: string) {
+  const door = navMeshes.find(mesh => mesh.name === which)
+
+  if (door instanceof Mesh) {
+    door.material = materialWalkable
+  }
+}
+
+async function setup () {
+  const gltf = await CompressedGLTFLoader.loadAsync(roomsNavMeshUrl)
+
+  navMeshes = gltf.scene.children
+  materialWalkable = gltf.scene.getObjectByName('rooms').material
+
+  for (const mesh of navMeshes) {
+    mesh.geometry.computeBoundsTree()
+  }
+}
+
+export function usePathfinding () {
 
   return {
-    navMesh,
+    setup,
     allowStep,
     makeDoorWalkable
   }
