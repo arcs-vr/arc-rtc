@@ -1,15 +1,14 @@
 import { Camera, Vector3 } from 'three'
-import { Pathfinding } from '../composables/usePathfinding.ts'
 
 export type ControlsOptions = {
-  sprintFactor: number,
-  crouchFactor: number,
+  sprintFactor: number
+  crouchFactor: number
   speed: number
+  jumpForce: number
 }
 
 export class KeyboardControls {
   public readonly velocity: Vector3 = new Vector3(0, 0, 0)
-  private readonly copyVector: Vector3 = new Vector3()
 
   private appliedSpeedFactor: number = 1
 
@@ -18,24 +17,26 @@ export class KeyboardControls {
   private readonly options: ControlsOptions
   private readonly camera: Camera
   private readonly domElement: HTMLElement
-  private readonly pathfinding: Pathfinding
 
-  constructor (camera: Camera, domElement: HTMLElement, options: ControlsOptions, pathfinding: Pathfinding) {
+  private canJump: boolean
+
+  constructor (camera: Camera, domElement: HTMLElement, options: ControlsOptions) {
     this.camera = camera
     this.options = options
     this.domElement = domElement
-    this.pathfinding = pathfinding
   }
 
   public start () {
     this.keys.clear()
     this.domElement.ownerDocument.addEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.addEventListener('keyup', this.keyListener)
+    this.domElement.ownerDocument.addEventListener('click', this.clickListener)
   }
 
   public stop () {
     this.domElement.ownerDocument.removeEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.removeEventListener('keyup', this.keyListener)
+    this.domElement.ownerDocument.removeEventListener('click', this.clickListener)
     this.keys.clear()
   }
 
@@ -43,20 +44,9 @@ export class KeyboardControls {
     return this.keys.size !== 0
   }
 
-  public update (time: number, delta: number): void {
-    if (!this.camera) {
-      return
-    }
-
-    this.copyVector
-      .copy(this.velocity)
-      .multiplyScalar(delta)
-      .applyQuaternion(this.camera.quaternion)
-      .setY(0)
-      .add(this.camera.position)
-    
-    if (this.pathfinding.allowStep(this.copyVector)) {
-      this.camera.position.copy(this.copyVector)
+  private clickListener = (event: MouseEvent) => {
+    if (event.button === 2) {
+      this.jump()
     }
   }
 
@@ -72,6 +62,10 @@ export class KeyboardControls {
     switch (event.type) {
       case 'keydown':
         this.keys.add(lowercaseKey)
+
+        if (lowercaseKey === 'space') {
+          this.jump()
+        }
         break
       case 'keyup':
         this.keys.delete(lowercaseKey)
@@ -82,14 +76,20 @@ export class KeyboardControls {
     this.updateVelocity()
   }
 
+  private jump () {
+    if (this.canJump) {
+      this.velocity.y = this.options.jumpForce
+    }
+  }
+
   private updateVelocity () {
     this.setAxisVelocity('x', ['keyd', 'arrowright'], ['keya', 'arrowleft'])
     this.setAxisVelocity('z', ['keys', 'arrowdown'], ['keyw', 'arrowup'])
-    this.velocity.multiplyScalar(this.appliedSpeedFactor)
+    this.velocity.multiply({ x: this.appliedSpeedFactor, y: 1, z: this.appliedSpeedFactor })
   }
 
   private applyFactors () {
-    if (this.keys.has('shiftleft')) {
+    if (this.keys.has('shiftleft') || this.keys.has('shiftright')) {
       this.appliedSpeedFactor = this.options.sprintFactor * this.options.speed
       return
     }

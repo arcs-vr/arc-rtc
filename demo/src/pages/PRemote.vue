@@ -18,8 +18,8 @@
   lang="ts"
   setup
 >
-import {nextTick, onBeforeUnmount, onMounted, shallowRef} from 'vue'
-import {Peer} from 'peerjs'
+import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
+import { Peer } from 'peerjs'
 import QrScanner from 'qr-scanner'
 
 const secret = shallowRef<string>()
@@ -37,8 +37,6 @@ onMounted(async () => {
     {},
   )
 
-  console.info(cameras)
-
   return qrScanner.value.start()
 })
 
@@ -47,7 +45,7 @@ onBeforeUnmount(() => {
   qrScanner.value = null
 })
 
-function onQRScanned(result) {
+function onQRScanned (result) {
   secret.value = result.data
   qrScanner.value.stop()
   connect()
@@ -55,9 +53,9 @@ function onQRScanned(result) {
 
 const peer = shallowRef<Peer>()
 
-function connect() {
+function connect () {
   if (!peer.value) {
-    peer.value = new Peer({secure: true, debug: 3})
+    peer.value = new Peer({ secure: true, debug: 3 })
   }
 
   const conn = peer.connect(secret.value)
@@ -70,7 +68,10 @@ function connect() {
 }
 </script>
 
-<style lang="scss" scoped>
+<style
+  lang="scss"
+  scoped
+>
 .PRemote {
 
   &__video {

@@ -3,5 +3,8 @@
   "workspaces": [
     "demo",
     "design"
-  ]
+  ],
+  "scripts": {
+    "demo:dev": "yarn workspace @arcs/demo run dev --host"
+  }
 }
