@@ -1,26 +1,19 @@
-import {HalfFloatType, PMREMGenerator, Texture, WebGLRenderer} from 'three'
-import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js'
+import { HalfFloatType, PMREMGenerator, Texture, WebGLRenderer } from 'three'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
-export async function useEnvMap(renderer: WebGLRenderer, url: string): Promise<Texture> {
-    const pmremGenerator = new PMREMGenerator(renderer)
-    const rgbeLoader = new RGBELoader()
+export async function useEnvMap (renderer: WebGLRenderer, url: string): Promise<Texture> {
+  const pmremGenerator = new PMREMGenerator(renderer)
+  const rgbeLoader = new RGBELoader()
 
-    pmremGenerator.compileEquirectangularShader()
-    return new Promise(function (resolve, reject) {
-        rgbeLoader
-            .setDataType(HalfFloatType)
-            .load(
-                url,
-                function (texture: Texture) {
-                    const envMap = pmremGenerator.fromEquirectangular(texture).texture
+  pmremGenerator.compileEquirectangularShader()
+  const texture = await rgbeLoader
+    .setDataType(HalfFloatType)
+    .loadAsync(url)
 
-                    texture.dispose()
-                    pmremGenerator.dispose()
+  const envMap = pmremGenerator.fromEquirectangular(texture).texture
 
-                    resolve(envMap)
-                },
-                undefined,
-                reject,
-            )
-    })
+  texture.dispose()
+  pmremGenerator.dispose()
+
+  return envMap
 }

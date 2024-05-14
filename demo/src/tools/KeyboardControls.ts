@@ -1,6 +1,6 @@
 import { Camera, Vector3 } from 'three'
 
-export type ControlsOptions = {
+export type KeyboardControlsOptions = {
   sprintFactor: number
   crouchFactor: number
   speed: number
@@ -14,40 +14,32 @@ export class KeyboardControls {
 
   private readonly keys: Set<string> = new Set()
 
-  private readonly options: ControlsOptions
+  private readonly options: KeyboardControlsOptions
   private readonly camera: Camera
   private readonly domElement: HTMLElement
 
   private canJump: boolean
 
-  constructor (camera: Camera, domElement: HTMLElement, options: ControlsOptions) {
+  constructor (camera: Camera, domElement: HTMLElement, options: KeyboardControlsOptions) {
     this.camera = camera
     this.options = options
     this.domElement = domElement
   }
 
-  public start () {
+  public connect () {
     this.keys.clear()
     this.domElement.ownerDocument.addEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.addEventListener('keyup', this.keyListener)
-    this.domElement.ownerDocument.addEventListener('click', this.clickListener)
   }
 
-  public stop () {
+  public disconnect () {
     this.domElement.ownerDocument.removeEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.removeEventListener('keyup', this.keyListener)
-    this.domElement.ownerDocument.removeEventListener('click', this.clickListener)
     this.keys.clear()
   }
 
-  public isVelocityActive () {
-    return this.keys.size !== 0
-  }
-
-  private clickListener = (event: MouseEvent) => {
-    if (event.button === 2) {
-      this.jump()
-    }
+  public dispose () {
+    this.disconnect()
   }
 
   /**

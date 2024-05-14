@@ -1,15 +1,22 @@
 <template>
   <div class="PRemote">
-    <p>remote</p>
-
     <Transition name="fade">
-      <span v-if="secret">{{ secret }}</span>
+      <GamepadView
+        v-if="status === PEER_STATUS.CONNECTED"
+        @send="onSendEvent"
+      />
 
-      <video
+      <div
         v-else
-        ref="qrCamera"
-        class="PRemote__video"
-      ></video>
+        class="PRemote__scanner"
+      >
+        <h1>Remote Gamepad</h1>
+        <p>Scan the QR Code on your desktop or laptop.</p>
+        <video
+          ref="qrCamera"
+          class="PRemote__video"
+        ></video>
+      </div>
     </Transition>
   </div>
 </template>
@@ -19,52 +26,82 @@
   setup
 >
 import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
-import { Peer } from 'peerjs'
+import { DataConnection, Peer } from 'peerjs'
 import QrScanner from 'qr-scanner'
+import GamepadView from '../components/GamepadView.vue'
+import { eventNameToId, PEER_STATUS } from '../config.ts'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
-const qrScanner = shallowRef<QrScanner>()
+let qrScanner: QrScanner
 
 onMounted(async () => {
+  if (checkUrl(window.location.href)) {
+    return
+  }
+
   await nextTick()
+  await QrScanner.listCameras(true)
 
-  const cameras = await QrScanner.listCameras(true)
-
-  qrScanner.value = new QrScanner(
+  qrScanner = new QrScanner(
     qrCamera.value,
     onQRScanned,
     {},
   )
 
-  return qrScanner.value.start()
+  return qrScanner.start()
 })
 
 onBeforeUnmount(() => {
-  qrScanner.value?.destroy()
-  qrScanner.value = null
+  qrScanner?.destroy()
+  qrScanner = null
 })
 
-function onQRScanned (result) {
-  secret.value = result.data
-  qrScanner.value.stop()
-  connect()
-}
-
-const peer = shallowRef<Peer>()
-
-function connect () {
-  if (!peer.value) {
-    peer.value = new Peer({ secure: true, debug: 3 })
+function checkUrl (urlString: string) {
+  const url = new URL(urlString)
+  if (url.searchParams.has('id')) {
+    secret.value = url.searchParams.get('id')
+    connect()
+    return true
   }
 
-  const conn = peer.connect(secret.value)
-  // on open will be launch when you successfully connect to PeerServer
-  conn.on('open', function (id) {
-    console.info(id, conn)
-    // here you have conn.id
-    conn.send('remote connected')
+  return false
+}
+
+function onQRScanned (result) {
+  if (checkUrl(result.data)) {
+    qrScanner?.stop()
+  }
+}
+
+let peer: Peer
+let conn: DataConnection
+const status = shallowRef<PEER_STATUS>(PEER_STATUS.NOT_CONNECTED)
+
+function connect () {
+  if (peer) {
+    peer.destroy()
+  }
+
+  peer = new Peer({ secure: true, debug: 3 })
+
+  peer.on('open', () => {
+    conn = peer.connect(secret.value)
+
+    conn.on('open', function () {
+      status.value = PEER_STATUS.CONNECTED
+    })
+
+    conn.on('error', function (err) {
+      status.value = PEER_STATUS.NOT_CONNECTED
+      console.error(err)
+    })
   })
+}
+
+function onSendEvent ({ eventName, details }) {
+  const id = eventNameToId.get(eventName)
+  conn?.send({ i: id, d: details })
 }
 </script>
 
@@ -73,6 +110,12 @@ function connect () {
   scoped
 >
 .PRemote {
+
+  &__scanner {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: var(--spacer-5);
+  }
 
   &__video {
     height: 80vw;

@@ -2,12 +2,13 @@
   <div
     ref="root"
     class="ParcourCanvas"
+    @click="lockPointer"
     @lock="showStartButton = false"
     @unlock="showStartButton = true"
   >
     <Transition name="fade">
       <button
-        v-if="!isLocked"
+        v-if="canStart && !isLocked && !animationFrameID"
         class="ParcourCanvas__startButton"
         type="button"
         @click="start"
@@ -15,11 +16,6 @@
         Start
       </button>
     </Transition>
-
-    <div style="position: absolute; top: 0; left: 0; padding: 1rem; background: white; color: black; z-index: 10000">
-      <p>{{ intersectedObjectName ?? 'no object' }}</p>
-      <p>{{ intersectedMaterialName ?? 'no material' }}</p>
-    </div>
   </div>
 </template>
 
@@ -28,7 +24,7 @@
   setup
 >
 import '../bvh-raycasting.ts'
-import { nextTick, onMounted, shallowRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { useEnvMap } from '../composables/useEnvMap.ts'
 import envMapUrl from '../assets/envmap/brown_photostudio_02_1k.hdr?url'
 import { Clock, Scene } from 'three'
@@ -45,15 +41,15 @@ import thankYouPosterUrl from '../assets/posters/thank_you.png?url'
 import findTheCodePosterUrl from '../assets/posters/find_the_code.png?url'
 import secondaryToJumpPosterUrl from '../assets/posters/secondary_to_jump.png?url'
 import { useResizingRenderer } from '../composables/useResizingRenderer.ts'
-import { usePathfinding } from '../composables/usePathfinding.ts'
 import { PLAYER_HEIGHT } from '../config.ts'
 import { useNumpadLockedDoor } from '../composables/useNumpadLockedDoor.ts'
-import { useCursor } from '../composables/useCursor.ts'
-import { useRaycastPointer } from '../composables/useRaycastPointer.ts'
+import { useCursor } from '../stores/useCursor.ts'
+import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
 import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 
 const root = shallowRef<HTMLDivElement>()
 
+const canStart = shallowRef(false)
 const canvas = document.createElement('canvas')
 canvas.classList.add('ParcourCanvas__canvas')
 
@@ -62,17 +58,15 @@ let animationFrameID: number | undefined = undefined
 
 const { camera, renderer } = useResizingRenderer(canvas)
 
-const { setup: setupPathfinding } = usePathfinding()
-await setupPathfinding()
-
 const {
   isLocked,
-  lookControls,
-  moveControls,
-  update: updateControls
-} = useUserControls(camera, root)
+  lockPointer,
+  update: updateControls,
+  connect: connectControls,
+  dispose: disposeControls,
+} = await useUserControls(camera, root)
 
-camera.position.set(60, PLAYER_HEIGHT, 5)
+camera.position.set(-120, PLAYER_HEIGHT + 0.1, 0)
 camera.rotation.set(0, -90 * DEG2RAD, 0)
 
 const envMap = await useEnvMap(renderer, envMapUrl)
@@ -80,14 +74,25 @@ const scene = new Scene()
 scene.environment = envMap
 scene.add(camera)
 
-const { cursor, iconMeshes } = useCursor()
 const {
-  setup: setupRaycastPointer,
-  update: updateIntersections,
-  intersectedObjectName,
-  intersectedMaterialName,
-} = useRaycastPointer(true)
-await setupRaycastPointer()
+  cursor,
+  iconMeshes
+} = await useCursor()
+
+const {
+  connect: connectRaycastPointer,
+  dispose: disposeRaycastPointer,
+  update: updateRaycastPointer,
+} = await useRaycastPointer()
+
+let stats
+if (import.meta.env.DEV) {
+  const module = await import('stats.js')
+  const Stats = module.default
+  stats = new Stats()
+  stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+  document.body.appendChild(stats.dom)
+}
 
 camera.add(
   cursor,
@@ -98,23 +103,27 @@ camera.add(
 scene.add(
   (await CompressedGLTFLoader.loadAsync(roomsGltfUrl)).scene,
 
-  await useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
-  await useFloorSign([-116, 0, 2], [0, -120 * DEG2RAD, 0], connectPosterUrl),
-  await useFloorSign([216, 0, -2], [0, -70 * DEG2RAD, 0], thankYouPosterUrl),
-  await useFloorSign([8, 0, 0], [0, -90 * DEG2RAD, 0], secondaryToJumpPosterUrl),
-  await useWallSign([-103, 0, 8], [0, -90 * DEG2RAD, 0], findTheCodePosterUrl),
-  await useNumpadLockedDoor([-102, 0, 0], '303909', 'door_1'),
-  await useNumpadLockedDoor([0, 0, 0], '271828', 'door_2'),
-  await useNumpadLockedDoor([102, 0, 0], '314159', 'door_3'),
-  await useNumpadLockedDoor([204, 0, 0], '161803', 'door_4'),
+  ...await Promise.all([
+    useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
+    useFloorSign([-116, 0, 2], [0, -120 * DEG2RAD, 0], connectPosterUrl),
+    useFloorSign([216, 0, -2], [0, -70 * DEG2RAD, 0], thankYouPosterUrl),
+    useFloorSign([8, 0, 0], [0, -90 * DEG2RAD, 0], secondaryToJumpPosterUrl),
+    useWallSign([-103, 0, 8], [0, -90 * DEG2RAD, 0], findTheCodePosterUrl),
+    useNumpadLockedDoor([-102, 0, 0], '303909', 'door_1'),
+    useNumpadLockedDoor([0, 0, 0], '271828', 'door_2'),
+    useNumpadLockedDoor([102, 0, 0], '314159', 'door_3'),
+    useNumpadLockedDoor([204, 0, 0], '161803', 'door_4')
+  ]),
 )
 
 function render (time: number) {
+  stats?.begin()
   const delta = clock.getDelta()
   updateAllTweens(time)
   updateControls(time, delta)
-  updateIntersections(camera)
+  updateRaycastPointer(camera)
   renderer.render(scene, camera)
+  stats?.end()
   animationFrameID = window.requestAnimationFrame(render)
 }
 
@@ -123,13 +132,27 @@ onMounted(async () => {
 
   root.value?.appendChild(canvas)
 
-  render()
+  connectControls(root.value)
+  connectRaycastPointer(root.value)
+
+  renderer.render(scene, camera)
+  canStart.value = true
+})
+
+onBeforeUnmount(() => {
+  window.cancelAnimationFrame(animationFrameID)
+
+  disposeControls()
+  disposeRaycastPointer()
+
+  renderer.dispose()
+
+  animationFrameID = null
 })
 
 function start () {
+  lockPointer()
   animationFrameID = window.requestAnimationFrame(render)
-  lookControls.value.lock()
-  moveControls.value.start()
 }
 </script>
 
