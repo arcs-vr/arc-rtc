@@ -20,6 +20,7 @@ __metadata:
     qr-scanner: "npm:^1.4.2"
     qrcode: "npm:^1.5.3"
     sass: "npm:^1.77.1"
+    stats.js: "npm:^0.17.0"
     three: "npm:^0.164.1"
     three-mesh-bvh: "npm:^0.7.4"
     three-pathfinding: "npm:^1.2.0"
@@ -2029,6 +2030,13 @@ __metadata:
   dependencies:
     minipass: "npm:^7.0.3"
   checksum: 10/f92c1b3cc9bfd0a925417412d07d999935917bc87049f43ebec41074661d64cf720315661844106a77da9f8204b6d55ae29f9514e673083cae39464343af2a8b
+  languageName: node
+  linkType: hard
+
+"stats.js@npm:^0.17.0":
+  version: 0.17.0
+  resolution: "stats.js@npm:0.17.0"
+  checksum: 10/c1be2253d57244cd45fcd61ff9d32599b36e3a15bb8b0e6d284dfc0997bc52fdf33266c112cc964689e903ba9c63d4b9eb06bdfa59066b5065e23d152deb749a
   languageName: node
   linkType: hard
 

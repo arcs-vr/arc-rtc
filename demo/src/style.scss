@@ -80,3 +80,17 @@ a {
 .fade-leave-to {
   opacity: 0;
 }
+
+
+strong {
+  color: var(--color-primary);
+}
+
+em {
+  color: var(--color-secondary);
+}
+
+button {
+  cursor: pointer;
+  color: currentColor;
+}

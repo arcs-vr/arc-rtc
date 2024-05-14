@@ -1,9 +1,9 @@
 import { RepeatWrapping, Scene } from 'three'
 
 import numpadGltfUrl from '../assets/models/numbers/numpad.gltf?url'
-import { usePathfinding } from './usePathfinding.ts'
+import { usePathfinding } from '../stores/usePathfinding.ts'
 import { Vector3Params } from '../types.ts'
-import { useRaycastPointer } from './useRaycastPointer.ts'
+import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
 import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 import { shallowRef, watchEffect } from 'vue'
 import { Easing, Tween } from '@tweenjs/tween.js'
@@ -11,6 +11,9 @@ import { Easing, Tween } from '@tweenjs/tween.js'
 let gltf: Scene | undefined
 
 export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: string, section: string) {
+  const { makeDoorWalkable } = await usePathfinding()
+  const { addObject } = await useRaycastPointer()
+
   if (!gltf) {
     gltf = await CompressedGLTFLoader.loadAsync(numpadGltfUrl)
   }
@@ -19,9 +22,6 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   const currentCode = shallowRef<string>('')
 
   newDoor.position.set(...position)
-
-  const { makeDoorWalkable } = usePathfinding()
-  const { addObject } = useRaycastPointer()
 
   const digits = []
   for (let i = 0; i < 6; i++) {
@@ -55,6 +55,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   for (let i = 0; i < 10; i++) {
     addObject(newDoor.getObjectByName(`numpad_button_${i}`), {
       maxDistance: 2,
+      iconPrimary: 'touch',
       onClick () {
         if (currentCode.value.length === 6) {
           return
@@ -67,6 +68,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
 
   addObject(newDoor.getObjectByName('numpad_button_enter'), {
     maxDistance: 2,
+    iconPrimary: 'touch',
     onClick () {
       if (currentCode.value === unlockCode) {
         makeDoorWalkable(section)
@@ -89,6 +91,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
 
   addObject(newDoor.getObjectByName('numpad_button_clear'), {
     maxDistance: 2,
+    iconPrimary: 'touch',
     onClick () {
       currentCode.value = ''
     }

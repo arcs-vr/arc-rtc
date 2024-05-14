@@ -1,6 +1,6 @@
 @use 'sass:math';
 
-@mixin hover-keyframes($name, $distance, $duration: 4s, $easing: ease, $delay: .2s) {
+@mixin hover-keyframes($name, $distance, $duration: 3s, $easing: ease, $delay: .2s) {
   animation: $name $duration $easing $delay infinite;
   will-change: transform;
 
@@ -9,13 +9,13 @@
       transform: translate3d(0, $distance, 0);
     }
 
-    50%, 90% {
+    60%, 90% {
       transform: translate3d(0, 0, 0);
     }
   }
 }
 
-.logo {
+.arc-logo {
   $layers-count: 5;
   $offset-total: 30%;
   $offset-correction: math.div($offset-total, 2);
@@ -24,6 +24,52 @@
   @include hover-keyframes(logo, -$offset-correction);
 
   overflow: visible;
+  height: var(--logo-height);
+  width: var(--logo-width);
+
+  .isolate {
+    isolation: isolate;
+  }
+
+  .b {
+    fill: var(--color-dark-50p-lighter);
+  }
+
+  .c {
+    fill: var(--color-dark-25p-lighter);
+  }
+
+  .e {
+    fill: var(--color-primary-25p-desaturated)
+  }
+
+  .f {
+    fill: var(--color-secondary-25p-desaturated)
+  }
+
+  .d {
+    opacity: .3;
+  }
+
+  .g {
+    opacity: .4;
+  }
+
+  .h {
+    opacity: .6;
+  }
+
+  .i {
+    opacity: .8;
+  }
+
+  .j {
+    fill: var(--color-primary);
+  }
+
+  .k {
+    fill: var(--color-secondary);
+  }
 
   @for $index from 0 through ($layers-count - 1) {
     .layer-#{$index} {

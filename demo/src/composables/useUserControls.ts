@@ -1,45 +1,50 @@
-import { nextTick, onBeforeUnmount, onMounted, Ref, shallowRef } from 'vue'
+import { shallowRef } from 'vue'
 import type { Camera } from 'three'
 import { Vector3 } from 'three'
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls'
 import { KeyboardControls } from '../tools/KeyboardControls.ts'
-import { usePathfinding } from './usePathfinding.ts'
+import { usePathfinding } from '../stores/usePathfinding.ts'
 import { PLAYER_HEIGHT, TOLERANCE } from '../config.ts'
+import { JoystickControls } from '../tools/JoystickControls.ts'
 
-export function useUserControls (camera: Camera, root: Ref<HTMLElement>) {
+export async function useUserControls (camera: Camera) {
   const isLocked = shallowRef(false)
-  const lookControls = shallowRef<PointerLockControls>()
-  const moveControls = shallowRef<KeyboardControls>()
-  const { allowStep } = usePathfinding()
+  let lookControls: PointerLockControls
+  let keyboardControls: KeyboardControls
+  let joystickControls: JoystickControls
+  const { allowStep } = await usePathfinding()
   const copyVector = new Vector3()
-  const targetOnNavMesh = new Vector3()
+  const targetOnNavMesh = camera.position.clone()
+  let lowestCameraY = targetOnNavMesh.y + PLAYER_HEIGHT
 
-  onMounted(async () => {
-    await nextTick()
+  function connect (element: HTMLElement) {
+    lookControls = new PointerLockControls(camera, element)
+    lookControls.addEventListener('lock', () => (isLocked.value = true))
+    lookControls.addEventListener('unlock', () => (isLocked.value = false))
+    lookControls.connect()
 
-    lookControls.value = new PointerLockControls(camera, root.value)
-    lookControls.value.addEventListener('lock', () => (isLocked.value = true))
-    lookControls.value.addEventListener('unlock', () => (isLocked.value = false))
-    lookControls.value.connect()
+    const options = { speed: 3, crouchFactor: .5, sprintFactor: 1.5, jumpForce: 5 }
 
-    moveControls.value = new KeyboardControls(
-      camera,
-      root.value,
-      { speed: 3, crouchFactor: .5, sprintFactor: 1.5, jumpForce: 5 },
-      PLAYER_HEIGHT
-    )
-  })
+    keyboardControls = new KeyboardControls(camera, element, options)
+    keyboardControls.connect()
 
-  onBeforeUnmount(() => {
-    lookControls.value.dispose()
-    moveControls.value.stop()
-  })
+    joystickControls = new JoystickControls(camera, element, options)
+    joystickControls.connect()
+  }
+
+  function dispose () {
+    lookControls.dispose()
+    keyboardControls.dispose()
+    joystickControls.dispose()
+  }
 
   function update (time: number, delta: number): void {
+    joystickControls.updateCamera(delta)
 
     copyVector
-      .copy(moveControls.value.velocity)
-      .setY(0) // only do it for x/z axes
+      .copy(keyboardControls.velocity)
+      .add(joystickControls.velocity)
+      .setY(0)
       .multiplyScalar(delta)
       .applyQuaternion(camera.quaternion)
       .add(camera.position)
@@ -47,20 +52,29 @@ export function useUserControls (camera: Camera, root: Ref<HTMLElement>) {
     // Acceleration 9.81m/s²
     // Velocity = Acceleration * Time
     // Distance = Velocity * Time
-    moveControls.value.velocity.y = moveControls.value.velocity.y - (9.81 * delta)
-    copyVector.y = Math.max(PLAYER_HEIGHT, camera.position.y + (moveControls.value.velocity.y * delta))
+    keyboardControls.velocity.y = keyboardControls.canJump
+      ? Math.max(0, keyboardControls.velocity.y) // allow jumping but not falling
+      : keyboardControls.velocity.y - (9.81 * delta) // only falling
+
+    copyVector.y = Math.max(lowestCameraY, camera.position.y + (keyboardControls.velocity.y * delta))
 
     if (allowStep(copyVector, targetOnNavMesh)) {
+      lowestCameraY = targetOnNavMesh.y + PLAYER_HEIGHT
       camera.position.copy(copyVector)
     }
 
-    moveControls.value.canJump = camera.position.y - PLAYER_HEIGHT - targetOnNavMesh.y < TOLERANCE
+    keyboardControls.canJump = camera.position.y - lowestCameraY < TOLERANCE
+  }
+
+  function lockPointer () {
+    lookControls?.lock()
   }
 
   return {
     isLocked,
-    lookControls,
-    moveControls,
+    lockPointer,
+    connect,
+    dispose,
     update
   }
 }
