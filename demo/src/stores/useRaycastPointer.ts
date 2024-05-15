@@ -1,4 +1,4 @@
-import type { Camera, Mesh } from 'three'
+import type { Camera, Intersection, Mesh } from 'three'
 import { Raycaster, Vector2 } from 'three'
 import { shallowRef, watchEffect } from 'vue'
 import { defineStore } from './defineStore.ts'
@@ -18,9 +18,9 @@ export const useRaycastPointer = defineStore(async () => {
   raycaster.firstHitOnly = true
 
   let domElement: HTMLElement
-  const intersections = []
+  const intersections: Intersection[] = []
   const objectsMap = new Map<Mesh, InteractiveObjectConfig>
-  let objectsToIntersect = []
+  let objectsToIntersect: Mesh[] = []
   const intersectedObjectConfig = shallowRef<InteractiveObjectConfig>()
 
   const cameraCenter = new Vector2(0, 0)
@@ -42,7 +42,11 @@ export const useRaycastPointer = defineStore(async () => {
     }
 
     const { object, distance } = intersections[0]
-    const config = objectsMap.get(object)
+    const config = objectsMap.get(object as Mesh)
+
+    if (!config) {
+      return
+    }
 
     if (distance > config.maxDistance) {
       clear()
@@ -108,7 +112,6 @@ export const useRaycastPointer = defineStore(async () => {
     domElement.removeEventListener('click', onClick)
     domElement.ownerDocument.removeEventListener('primary', onPrimary)
     domElement.ownerDocument.removeEventListener('secondary', onSecondary)
-    domElement = null
   }
 
   return {

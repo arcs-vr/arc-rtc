@@ -11,7 +11,6 @@ const ICON_ANIMATION_DURATION = 200
 const ICON_EASING = Easing.Cubic.Out
 export const useCursor = defineStore(async () => {
   const startColor = new Color(0, 1, 1)
-  const interactionColor = new Color(0, 0, 1)
   const textureLoader = new TextureLoader()
   const iconTextures = new Map<string, Texture>
 
@@ -25,7 +24,7 @@ export const useCursor = defineStore(async () => {
     depthWrite: false
   })
 
-  const cursor = new Mesh(geometry, material, { renderOrder: 999 })
+  const cursor = new Mesh(geometry, material)
 
   const cursorTween = new Tween(cursor.scale)
     .to({ x: 0.75, y: 0.75, z: 0.75 }, 300)
@@ -43,20 +42,23 @@ export const useCursor = defineStore(async () => {
   })
 
   const iconMeshes = {
-    primary: new Mesh(spriteGeometry, spriteMaterial, { renderOrder: 999 }),
-    secondary: new Mesh(spriteGeometry, spriteMaterial.clone(), { renderOrder: 999 })
+    primary: new Mesh(spriteGeometry, spriteMaterial),
+    secondary: new Mesh(spriteGeometry, spriteMaterial.clone())
   }
 
-  const iconTweens: Record<string, Tween> = {
+  const iconTweens: Record<string, Tween<{ opacity: number }> | null> = {
     primary: null,
     secondary: null,
   }
 
   cursor.position.set(0, 0, -0.35)
+  cursor.renderOrder = 999
   iconMeshes.primary.position.set(-0.02, -0.02, -0.35)
   iconMeshes.primary.visible = false
+  iconMeshes.primary.renderOrder = 999
   iconMeshes.secondary.position.set(0.02, -0.02, -0.35)
-  iconMeshes.primary.visible = false
+  iconMeshes.secondary.visible = false
+  iconMeshes.secondary.renderOrder = 999
 
   const [
     touchIcon,
@@ -80,10 +82,16 @@ export const useCursor = defineStore(async () => {
   iconTextures.set('swap', swapIcon)
   iconTextures.set('upgrade', jumpIcon)
 
-  function setIcon (which: 'primary' | 'secondary', icon: string | null) {
+  function setIcon (which: 'primary' | 'secondary', icon: string) {
     const mesh = iconMeshes[which]
+    const texture = iconTextures.get(icon)
+
+    if (!texture) {
+      return
+    }
+
     mesh.visible = true
-    mesh.material.map = iconTextures.get(icon)
+    mesh.material.map = texture
     mesh.material.needsUpdate = true
 
     iconTweens[which]?.stop()

@@ -33,7 +33,7 @@ import { eventNameToId, PEER_STATUS } from '../config.ts'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
-let qrScanner: QrScanner
+let qrScanner: QrScanner | null = null
 
 onMounted(async () => {
   if (checkUrl(window.location.href)) {
@@ -52,6 +52,10 @@ onBeforeUnmount(() => {
 async function startScanning () {
   await QrScanner.listCameras(true)
 
+  if (!qrCamera.value) {
+    return
+  }
+
   qrScanner = new QrScanner(
     qrCamera.value,
     onQRScanned,
@@ -64,7 +68,7 @@ async function startScanning () {
 function checkUrl (urlString: string) {
   const url = new URL(urlString)
   if (url.searchParams.has('id')) {
-    secret.value = url.searchParams.get('id')
+    secret.value = url.searchParams.get('id') ?? undefined
     connect()
     return true
   }
@@ -72,10 +76,10 @@ function checkUrl (urlString: string) {
   return false
 }
 
-function onQRScanned (result) {
+function onQRScanned (result: QrScanner.ScanResult) {
   if (checkUrl(result.data)) {
     qrScanner?.stop()
-    qrScanner.destroy()
+    qrScanner?.destroy()
     qrScanner = null
   }
 }
@@ -91,13 +95,14 @@ watch(status, async (newStatus) => {
 })
 
 function connect () {
-  if (peer) {
-    peer.destroy()
-  }
-
+  peer?.destroy()
   peer = new Peer({ secure: true })
 
   peer.on('open', () => {
+    if (!secret.value) {
+      return
+    }
+
     conn = peer.connect(secret.value)
 
     conn.on('open', function () {
@@ -115,7 +120,7 @@ function connect () {
   })
 }
 
-function onSendEvent ({ eventName, details }) {
+function onSendEvent ({ eventName, details }: { eventName: string, details: unknown }) {
   const id = eventNameToId.get(eventName)
   conn?.send({ i: id, d: details })
 }

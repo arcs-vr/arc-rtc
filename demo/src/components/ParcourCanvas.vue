@@ -168,7 +168,7 @@ function start () {
   position: relative;
   width: 100vw;
 
-  :deep(&__canvas) {
+  :deep(canvas) {
     inset: 0;
     position: absolute;
     z-index: -1;

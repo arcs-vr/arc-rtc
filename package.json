@@ -5,6 +5,7 @@
     "design"
   ],
   "scripts": {
-    "demo:dev": "yarn workspace @arcs/demo run dev --host"
+    "demo:dev": "yarn workspace @arcs/demo run dev --host",
+    "demo:build": "yarn workspace @arcs/demo build"
   }
 }

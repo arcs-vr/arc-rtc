@@ -38,9 +38,9 @@ const emit = defineEmits<{
 
 const cursor = shallowRef<HTMLElement>()
 const root = shallowRef<HTMLElement>()
-let currentStart = null
-let currentHold = null
-let currentBound = null
+let currentStart: { clientX: number, clientY: number } | null = null
+let currentHold: Touch | null = null
+let currentBound: { width: number, height: number } | null = null
 const cursorX = shallowRef(0)
 const cursorY = shallowRef(0)
 const cursorTransform = computed(() => `transform: translate(${cursorX.value}px, ${cursorY.value}px)`)
