@@ -27,6 +27,12 @@ export const useCursor = defineStore(async () => {
 
   const cursor = new Mesh(geometry, material, { renderOrder: 999 })
 
+  const cursorTween = new Tween(cursor.scale)
+    .to({ x: 0.75, y: 0.75, z: 0.75 }, 300)
+    .yoyo(true)
+    .repeat(1)
+    .easing(Easing.Cubic.Out)
+
   const spriteGeometry = new PlaneGeometry(0.02, 0.02, 1)
   const spriteMaterial = new MeshBasicMaterial({
     transparent: true,
@@ -111,10 +117,16 @@ export const useCursor = defineStore(async () => {
       .start()
   }
 
+  function animateClick () {
+    cursorTween.stop()
+    cursorTween.start()
+  }
+
   return {
     cursor,
     iconMeshes,
     setIcon,
-    clearIcon
+    clearIcon,
+    animateClick
   }
 })

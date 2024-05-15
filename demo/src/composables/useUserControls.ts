@@ -23,7 +23,13 @@ export async function useUserControls (camera: Camera) {
     lookControls.addEventListener('unlock', () => (isLocked.value = false))
     lookControls.connect()
 
-    const options = { speed: 3, crouchFactor: .5, sprintFactor: 1.5, jumpForce: 5 }
+    const options = {
+      speed: 5,
+      lookSpeed: 3,
+      crouchFactor: .5,
+      sprintFactor: 1.5,
+      jumpForce: 5
+    }
 
     keyboardControls = new KeyboardControls(camera, element, options)
     keyboardControls.connect()

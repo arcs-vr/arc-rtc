@@ -56,7 +56,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
     addObject(newDoor.getObjectByName(`numpad_button_${i}`), {
       maxDistance: 2,
       iconPrimary: 'touch',
-      onClick () {
+      onPrimary () {
         if (currentCode.value.length === 6) {
           return
         }
@@ -69,7 +69,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   addObject(newDoor.getObjectByName('numpad_button_enter'), {
     maxDistance: 2,
     iconPrimary: 'touch',
-    onClick () {
+    onPrimary () {
       if (currentCode.value === unlockCode) {
         makeDoorWalkable(section)
         const bigDoor = newDoor.getObjectByName('numpad_door_big')
@@ -92,7 +92,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   addObject(newDoor.getObjectByName('numpad_button_clear'), {
     maxDistance: 2,
     iconPrimary: 'touch',
-    onClick () {
+    onPrimary () {
       currentCode.value = ''
     }
   })

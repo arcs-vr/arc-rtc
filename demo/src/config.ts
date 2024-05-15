@@ -13,7 +13,9 @@ export enum PEER_STATUS {
 }
 
 export const eventIdToName = new Map<number, string>([
-  [0, 'stickmove']
+  [0, 'stickmove'],
+  [1, 'primary'],
+  [2, 'secondary'],
 ])
 
 export const eventNameToId = new Map<string, number>(
