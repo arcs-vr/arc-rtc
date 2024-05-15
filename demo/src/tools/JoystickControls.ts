@@ -3,7 +3,8 @@ import { StickMoveEvent } from '../types.ts'
 import { JOYSTICK_TYPE } from '../config.ts'
 
 type JoystickControlsOptions = {
-  speed: number
+  speed: number,
+  lookSpeed: number
 }
 
 const PI_2 = Math.PI / 2
@@ -64,7 +65,7 @@ export class JoystickControls {
       return
     }
 
-    this.rotation.x = event.detail[2]
-    this.rotation.y = event.detail[1]
+    this.rotation.x = event.detail[2] * this.options.lookSpeed
+    this.rotation.y = event.detail[1] * this.options.lookSpeed
   }
 }

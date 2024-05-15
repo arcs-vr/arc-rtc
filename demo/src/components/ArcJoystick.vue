@@ -25,11 +25,11 @@
   setup
 >
 import { computed, shallowRef } from 'vue'
-import { Easing } from '@tweenjs/tween.js'
 
 const props = defineProps<{
   label: string
-  id: string
+  id: string,
+  easing: (amount: number) => number
 }>()
 
 const emit = defineEmits<{
@@ -44,12 +44,10 @@ let currentBound = null
 const cursorX = shallowRef(0)
 const cursorY = shallowRef(0)
 const cursorTransform = computed(() => `transform: translate(${cursorX.value}px, ${cursorY.value}px)`)
+const gradientPoints = 10
+const gradient = computed(() => `radial-gradient(closest-side, ${Array(gradientPoints).fill(0).map((_, i) => `hsl(0deg 0% ${props.easing(i / (gradientPoints - 1)) * 20}%)`).join(', ')})`)
 
 function startMovement () {
-  if (navigator.vibrate) {
-    navigator.vibrate([50])
-  }
-
   const cursorRect = cursor.value.getBoundingClientRect()
   const boundaryRect = root.value.getBoundingClientRect()
 
@@ -76,16 +74,11 @@ function updateMovement (event) {
   cursorX.value = absMin(currentHold.clientX - currentStart.clientX, currentBound.width)
   cursorY.value = absMin(currentHold.clientY - currentStart.clientY, currentBound.height)
 
-  const x = cursorX.value / currentBound.width
-  const xSign = x < 0 ? -1 : 1
-  const y = cursorY.value / currentBound.height
-  const ySign = y < 0 ? -1 : 1
-
   emit(
     'update',
     [
-      xSign * Easing.Quadratic.In(x),
-      ySign * Easing.Quadratic.In(y)
+      props.easing(cursorX.value / currentBound.width),
+      props.easing(cursorY.value / currentBound.height)
     ]
   )
 }
@@ -107,7 +100,7 @@ function stopMovement () {
 @use "sass:math";
 
 .ArcJoystick {
-  $cursor-base: 8rem;
+  $cursor-base: 50vmin;
   $cursor-base-third: math.div($cursor-base, 3);
 
   align-items: center;
@@ -117,6 +110,7 @@ function stopMovement () {
   position: relative;
   width: 100%;
   text-align: center;
+  background-image: v-bind(gradient);
 
   &__layer {
     height: 100%;

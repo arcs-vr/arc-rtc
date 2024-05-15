@@ -6,38 +6,21 @@
 
     <span><em>Status:</em> {{ status }}</span>
 
-    <Transition
-      mode="out-in"
-      name="fade"
-    >
-      <template v-if="status === PEER_STATUS.READY_TO_CONNECT">
-        <div class="ConnectionModal__qr">
-          <p>Scan the QR Code with your smartphone's or tablet's camera app or a QR scanner app.</p>
-          <p>It will open a gamepad controller directly connected to this 3D parcour.</p>
+    <div class="ConnectionModal__qr">
+      <p>Scan the QR Code with your smartphone's or tablet's camera app or a QR scanner app.</p>
+      <p>It will open a gamepad controller directly connected to this 3D parcour.</p>
 
-          <label for="peer-id">QR Code</label>
-          <output
-            id="peer-id"
-            name="peer-id"
-          >
-            <img
-              :src="qrData"
-              alt=""
-            />
-          </output>
-        </div>
-      </template>
-      <template v-else-if="status === PEER_STATUS.CONNECTED">
-        <p><em>Success!</em> The dialog will now close.</p>
-      </template>
-      <template v-else>
-        <button
-          type="button"
-          @click="emit('connect')"
-        >Generate Secret
-        </button>
-      </template>
-    </Transition>
+      <label for="peer-id">QR Code</label>
+      <output
+        id="peer-id"
+        name="peer-id"
+      >
+        <img
+          :src="qrData"
+          alt=""
+        />
+      </output>
+    </div>
 
     <button
       class="ConnectionModal__close"

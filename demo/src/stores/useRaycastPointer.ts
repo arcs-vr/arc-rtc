@@ -6,13 +6,14 @@ import { useCursor } from './useCursor.ts'
 
 type InteractiveObjectConfig = {
   maxDistance: number
-  onClick: () => {}
+  onPrimary?: () => {}
+  onSecondary?: () => {}
   iconPrimary?: string
   iconSecondary?: string
 }
 
 export const useRaycastPointer = defineStore(async () => {
-  const { setIcon, clearIcon } = await useCursor()
+  const { animateClick, setIcon, clearIcon } = await useCursor()
   const raycaster = new Raycaster(undefined, undefined, 0, 200)
   raycaster.firstHitOnly = true
 
@@ -67,13 +68,37 @@ export const useRaycastPointer = defineStore(async () => {
     objectsToIntersect = Array.from(objectsMap.keys())
   }
 
-  function onClick () {
-    intersectedObjectConfig.value?.onClick?.()
+  function onClick (event: MouseEvent) {
+    const { button } = event
+
+    if (button === 0) {
+      return onPrimary()
+    }
+
+    if (button === 2) {
+      return onSecondary()
+    }
+  }
+
+  function onPrimary () {
+    if (intersectedObjectConfig.value?.onPrimary) {
+      intersectedObjectConfig.value.onPrimary()
+      animateClick()
+    }
+  }
+
+  function onSecondary () {
+    if (intersectedObjectConfig.value?.onSecondary) {
+      intersectedObjectConfig.value.onSecondary()
+      animateClick()
+    }
   }
 
   function connect (element: HTMLElement) {
     domElement = element
     domElement.addEventListener('click', onClick)
+    domElement.ownerDocument.addEventListener('primary', onPrimary)
+    domElement.ownerDocument.addEventListener('secondary', onSecondary)
   }
 
   function dispose () {
@@ -81,6 +106,8 @@ export const useRaycastPointer = defineStore(async () => {
     objectsToIntersect.length = 0
     objectsMap.clear()
     domElement.removeEventListener('click', onClick)
+    domElement.ownerDocument.removeEventListener('primary', onPrimary)
+    domElement.ownerDocument.removeEventListener('secondary', onSecondary)
     domElement = null
   }
 

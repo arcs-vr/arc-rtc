@@ -16,7 +16,6 @@
       :qr-data="qrData"
       :status="status"
       @close="isConnectionModalOpen = false"
-      @connect="connect"
     />
   </Transition>
 
@@ -24,7 +23,7 @@
     class="PParcour__connectButton"
     title="Use phone as gamepad"
     type="button"
-    @click="isConnectionModalOpen = true"
+    @click="openModal"
   >
     <img
       alt
@@ -59,6 +58,11 @@ watch(status, (newStatus) => {
     setTimeout(() => { isConnectionModalOpen.value = false }, 1_000)
   }
 })
+
+function openModal () {
+  isConnectionModalOpen.value = true
+  connect()
+}
 </script>
 
 <style

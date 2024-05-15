@@ -12,7 +12,7 @@ export function usePeerReceiver () {
   const qrData = useQRCode(url)
 
   function connect () {
-    peer = new Peer(id.value, { secure: true, debug: 3 })
+    peer = new Peer(id.value, { secure: true })
 
     peer.on('open', () => {
       status.value = PEER_STATUS.READY_TO_CONNECT

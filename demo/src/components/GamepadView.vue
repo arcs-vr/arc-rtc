@@ -2,6 +2,7 @@
   <div class="GamepadView">
     <ArcJoystick
       id="move"
+      :easing="moveEasing"
       class="GamepadView__move"
       label="move"
       @update="sendStickMove(JOYSTICK_TYPE.MOVE, $event)"
@@ -9,13 +10,22 @@
 
     <ArcJoystick
       id="look"
+      :easing="lookEasing"
       class="GamepadView__look"
       label="look"
       @update="sendStickMove(JOYSTICK_TYPE.LOOK, $event)"
     />
 
-    <button class="GamepadView__secondary">Secondary</button>
-    <button class="GamepadView__primary">Primary</button>
+    <button
+      class="GamepadView__secondary"
+      @click="sendSecondary"
+    >Secondary
+    </button>
+    <button
+      class="GamepadView__primary"
+      @click="sendPrimary"
+    >Primary
+    </button>
   </div>
 </template>
 
@@ -34,6 +44,22 @@ const emit = defineEmits<{
 function sendStickMove (type: JOYSTICK_TYPE, [x, y]: number[]) {
   emit('send', { eventName: 'stickmove', details: [type, x, y] })
 }
+
+function sendPrimary () {
+  emit('send', { eventName: 'primary' })
+}
+
+function sendSecondary () {
+  emit('send', { eventName: 'secondary' })
+}
+
+function moveEasing (a: number) {
+  return (a < 0 ? -1 : 1) * a ** 2
+}
+
+function lookEasing (a: number) {
+  return a ** 3
+}
 </script>
 
 <style
@@ -43,8 +69,8 @@ function sendStickMove (type: JOYSTICK_TYPE, [x, y]: number[]) {
 .GamepadView {
   display: grid;
   grid-template-areas:
-   "move move secondary primary"
-   "move move look look";
+   "move move secondary look look"
+   "move move primary look look";
   gap: var(--spacer-1);
   background-color: var(--color-light);
 
@@ -71,10 +97,14 @@ function sendStickMove (type: JOYSTICK_TYPE, [x, y]: number[]) {
 
   &__primary {
     grid-area: primary;
+    background-color: var(--color-primary);
+    color: var(--color-dark);
   }
 
   &__secondary {
     grid-area: secondary;
+    background-color: var(--color-secondary);
+    color: var(--color-dark);
   }
 }
 </style>
