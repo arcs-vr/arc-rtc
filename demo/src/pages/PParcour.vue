@@ -12,7 +12,7 @@
 
   <Transition name="fade">
     <ConnectionModal
-      v-if="isConnectionModalOpen"
+      v-if="isConnectionModalOpen && qrData"
       :qr-data="qrData"
       :status="status"
       @close="isConnectionModalOpen = false"
@@ -26,7 +26,7 @@
     @click="openModal"
   >
     <img
-      alt
+      alt=""
       height="48px"
       src="@arcs/design/images/videogame_asset-24px.svg"
       width="48px"

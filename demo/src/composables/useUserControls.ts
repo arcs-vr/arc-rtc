@@ -31,7 +31,7 @@ export async function useUserControls (camera: Camera) {
       jumpForce: 5
     }
 
-    keyboardControls = new KeyboardControls(camera, element, options)
+    keyboardControls = new KeyboardControls(element, options)
     keyboardControls.connect()
 
     joystickControls = new JoystickControls(camera, element, options)

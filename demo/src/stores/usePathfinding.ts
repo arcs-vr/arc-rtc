@@ -1,4 +1,4 @@
-import { Material, Mesh, Raycaster, Vector3 } from 'three'
+import { Intersection, Material, Mesh, Raycaster, Vector3 } from 'three'
 import { PLAYER_HEIGHT, TOLERANCE } from '../config.ts'
 import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 import roomsNavMeshUrl from '../assets/models/numbers/nav_mesh.gltf?url'
@@ -14,7 +14,7 @@ export const usePathfinding = defineStore(async () => {
   raycaster.firstHitOnly = true
 
   const down = new Vector3(0, -1, 0)
-  const intersections = []
+  const intersections: Intersection[] = []
 
   /**
    * Target is next player body position at feet
@@ -28,7 +28,7 @@ export const usePathfinding = defineStore(async () => {
       return false
     }
 
-    if (intersections[0].object.material.name !== 'nav_mesh_walkable') {
+    if ((intersections[0].object as Mesh).material.name !== 'nav_mesh_walkable') {
       return false
     }
 

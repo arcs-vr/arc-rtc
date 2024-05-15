@@ -1,4 +1,4 @@
-import { Camera, Vector3 } from 'three'
+import { Vector3 } from 'three'
 
 export type KeyboardControlsOptions = {
   sprintFactor: number
@@ -15,13 +15,11 @@ export class KeyboardControls {
   private readonly keys: Set<string> = new Set()
 
   private readonly options: KeyboardControlsOptions
-  private readonly camera: Camera
   private readonly domElement: HTMLElement
 
-  private canJump: boolean
+  private canJump: boolean = false
 
-  constructor (camera: Camera, domElement: HTMLElement, options: KeyboardControlsOptions) {
-    this.camera = camera
+  constructor (domElement: HTMLElement, options: KeyboardControlsOptions) {
     this.options = options
     this.domElement = domElement
   }

@@ -10,8 +10,8 @@ type JoystickControlsOptions = {
 const PI_2 = Math.PI / 2
 
 export class JoystickControls {
-  public readonly velocity: Vector3 = new Vector3(0, 0, 0)
-  public readonly rotation: Vector3 = new Vector2(0, 0)
+  public readonly velocity = new Vector3(0, 0, 0)
+  public readonly rotation = new Vector2(0, 0)
 
   private readonly camera: Camera
   private readonly options: JoystickControlsOptions
@@ -42,7 +42,7 @@ export class JoystickControls {
     this.disconnect()
   }
 
-  public updateCamera (delta) {
+  public updateCamera (delta: number) {
     this.copyEuler.setFromQuaternion(this.camera.quaternion)
 
     this.copyEuler.x -= this.rotation.x * delta
