@@ -1,11 +1,13 @@
 import { Intersection, Material, Mesh, Raycaster, Vector3 } from 'three'
 import { PLAYER_HEIGHT, TOLERANCE } from '../config.ts'
-import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import { useGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 import roomsNavMeshUrl from '../assets/models/numbers/nav_mesh.gltf?url'
 import { defineStore } from './defineStore.ts'
 
 export const usePathfinding = defineStore(async () => {
-  const gltf = await CompressedGLTFLoader.loadAsync(roomsNavMeshUrl)
+  const { loadModel } = await useGLTFLoader()
+
+  const gltf = await loadModel(roomsNavMeshUrl)
 
   let navMeshes: Mesh[]
   let materialWalkable: Material
