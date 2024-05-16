@@ -6,6 +6,12 @@ export enum JOYSTICK_TYPE {
   LOOK
 }
 
+/**
+ * If there was no joystick event for this amount of time, clear all joystick inputs.
+ * This is to prevent perpetual movement when the connectivity is bad.
+ */
+export const JOYSTICK_HEARTBEAT_TIMEOUT = 2_000
+
 export enum PEER_STATUS {
   NOT_CONNECTED = 'not connected',
   READY_TO_CONNECT = 'ready to connect',

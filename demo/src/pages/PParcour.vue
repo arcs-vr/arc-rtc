@@ -28,7 +28,7 @@
     <img
       alt=""
       height="48px"
-      src="@arcs/design/images/videogame_asset-24px.svg"
+      src="../assets/icons/videogame_asset-24px.svg"
       width="48px"
     >
   </button>
@@ -72,8 +72,8 @@ function openModal () {
 .PParcour {
 
   &__connectButton {
-    position: fixed;
     bottom: var(--spacer);
+    position: fixed;
     right: var(--spacer);
   }
 }

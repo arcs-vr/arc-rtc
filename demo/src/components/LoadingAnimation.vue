@@ -17,16 +17,22 @@ defineProps<{
 }>()
 </script>
 
-<style>
+<style lang="scss">
 @import "@arcs/design/src/logo-animation.scss";
+</style>
 
+<style
+  lang="scss"
+  scoped
+>
 .LoadingAnimation {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   width: min(500px, 80vw);
-  height: min(500px, 80vw);
 
   &[data-small] {
     width: min(250px, 40vw);
-    height: min(250px, 40vw);
   }
 }
 </style>

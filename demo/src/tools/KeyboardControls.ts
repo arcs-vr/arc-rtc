@@ -28,11 +28,13 @@ export class KeyboardControls {
     this.keys.clear()
     this.domElement.ownerDocument.addEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.addEventListener('keyup', this.keyListener)
+    this.domElement.ownerDocument.addEventListener('secondary', this.jump)
   }
 
   public disconnect () {
     this.domElement.ownerDocument.removeEventListener('keydown', this.keyListener)
     this.domElement.ownerDocument.removeEventListener('keyup', this.keyListener)
+    this.domElement.ownerDocument.removeEventListener('secondary', this.jump)
     this.keys.clear()
   }
 
@@ -66,7 +68,7 @@ export class KeyboardControls {
     this.updateVelocity()
   }
 
-  private jump () {
+  private jump = () => {
     if (this.canJump) {
       this.velocity.y = this.options.jumpForce
     }

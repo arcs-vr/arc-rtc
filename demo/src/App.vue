@@ -6,10 +6,10 @@
 
 <style scoped>
 .ArcRTC {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
   align-items: center;
+  display: flex;
+  height: 100vh;
   justify-content: center;
+  width: 100vw;
 }
 </style>

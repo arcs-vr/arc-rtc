@@ -1,10 +1,9 @@
 import { RepeatWrapping, Scene } from 'three'
 
-import numpadGltfUrl from '../assets/models/numbers/numpad.gltf?url'
 import { usePathfinding } from '../stores/usePathfinding.ts'
 import { Vector3Params } from '../types.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
-import { useGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
 import { shallowRef, watchEffect } from 'vue'
 import { Easing, Tween } from '@tweenjs/tween.js'
 
@@ -16,7 +15,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
 
   if (!gltf) {
     const { loadModel } = await useGLTFLoader()
-    gltf = await loadModel(numpadGltfUrl)
+    gltf = await loadModel('models/numbers/numpad.gltf')
   }
 
   const newDoor = gltf.scene.clone(true)

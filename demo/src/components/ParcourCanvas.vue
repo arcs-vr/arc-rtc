@@ -13,7 +13,7 @@
         type="button"
         @click="start"
       >
-        Start
+        Click to start
       </button>
     </Transition>
   </div>
@@ -34,7 +34,6 @@ import { useFloorSign } from '../composables/useFloorSign.ts'
 import { useWallSign } from '../composables/useWallSign.ts'
 import { DEG2RAD } from 'three/src/math/MathUtils'
 
-import roomsGltfUrl from '../assets/models/numbers/rooms.gltf?url'
 import connectPosterUrl from '../assets/posters/connect_arcs.png?url'
 import gazeNavPosterUrl from '../assets/posters/gaze_navigation.png?url'
 import thankYouPosterUrl from '../assets/posters/thank_you.png?url'
@@ -45,7 +44,7 @@ import { PLAYER_HEIGHT } from '../config.ts'
 import { useNumpadLockedDoor } from '../composables/useNumpadLockedDoor.ts'
 import { useCursor } from '../stores/useCursor.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
-import { useGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
 
 const root = shallowRef<HTMLDivElement>()
 
@@ -100,10 +99,10 @@ camera.add(
   iconMeshes.secondary
 )
 
-const { loadModel } = await useGLTFLoader()
+const { loadModel, dispose: disposeGTLFLoader } = await useGLTFLoader()
 
 scene.add(
-  (await loadModel(roomsGltfUrl)).scene,
+  (await loadModel('models/numbers/rooms.gltf')).scene,
 
   ...await Promise.all([
     useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
@@ -117,6 +116,8 @@ scene.add(
     useNumpadLockedDoor([204, 0, 0], '161803', 'door_4')
   ]),
 )
+
+disposeGTLFLoader()
 
 function render (time: number) {
   stats?.begin()
