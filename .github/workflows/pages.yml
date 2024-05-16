@@ -16,6 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  ROOT_PATH: "."
   BUILD_PATH: "./demo"
 
 jobs:
@@ -31,7 +32,7 @@ jobs:
         with:
           node-version: "22"
           cache: yarn
-          cache-dependency-path: ${{ env.BUILD_PATH }}/yarn.lock
+          cache-dependency-path: ${{ env.ROOT_PATH }}/yarn.lock
 
       - name: Setup Pages
         id: pages
@@ -39,11 +40,11 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
-        working-directory: ${{ env.BUILD_PATH }}
+        working-directory: ${{ env.ROOT_PATH }}
 
       - name: Build
-        run: yarn build
-        working-directory: ${{ env.BUILD_PATH }}
+        run: yarn demo:build
+        working-directory: ${{ env.ROOT_PATH }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
