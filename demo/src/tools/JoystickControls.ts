@@ -1,6 +1,6 @@
 import { Camera, Euler, Vector2, Vector3 } from 'three'
 import { StickMoveEvent } from '../types.ts'
-import { JOYSTICK_TYPE } from '../config.ts'
+import { JOYSTICK_HEARTBEAT_TIMEOUT, JOYSTICK_TYPE } from '../config.ts'
 
 type JoystickControlsOptions = {
   speed: number,
@@ -24,6 +24,8 @@ export class JoystickControls {
   private readonly maxPolarAngle = Math.PI // radians
   private readonly copyEuler = new Euler(0, 0, 0, 'YXZ')
 
+  private timeoutId = null
+
   constructor (camera: Camera, domElement: HTMLElement, options: JoystickControlsOptions) {
     this.camera = camera
     this.options = options
@@ -39,6 +41,7 @@ export class JoystickControls {
   }
 
   public dispose () {
+    this.timeoutId && window.clearTimeout(this.timeoutId)
     this.disconnect()
   }
 
@@ -56,7 +59,17 @@ export class JoystickControls {
     this.camera.quaternion.setFromEuler(this.copyEuler)
   }
 
+  private clear = () => {
+    this.rotation.x = 0
+    this.rotation.y = 0
+    this.velocity.x = 0
+    this.velocity.y = 0
+    this.velocity.z = 0
+  }
   private stickListener = (event: StickMoveEvent) => {
+    this.timeoutId && window.clearTimeout(this.timeoutId)
+    this.timeoutId = setTimeout(this.clear, JOYSTICK_HEARTBEAT_TIMEOUT)
+
     if (event.detail[0] === JOYSTICK_TYPE.MOVE) {
       this.velocity
         .set(event.detail[1], 0, event.detail[2])

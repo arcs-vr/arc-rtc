@@ -1,17 +1,26 @@
 <template>
   <div class="PRemote">
     <Transition name="fade">
-      <GamepadView
-        v-if="status === PEER_STATUS.CONNECTED"
-        @send="onSendEvent"
-      />
+      <template v-if="status === PEER_STATUS.CONNECTED">
+        <GamepadView
+          v-if="isLandscape"
+          @send="onSendEvent"
+        />
+
+        <div v-else>
+          Please rotate your phone to landscape mode.
+        </div>
+      </template>
 
       <div
         v-else
         class="PRemote__scanner"
       >
-        <h1>Remote Gamepad</h1>
-        <p>Scan the QR Code on your desktop or laptop.</p>
+        <div>
+          <h1>Remote Gamepad</h1>
+          <p>Scan the QR Code on your desktop or laptop.</p>
+        </div>
+
         <video
           ref="qrCamera"
           class="PRemote__video"
@@ -30,6 +39,7 @@ import { DataConnection, Peer } from 'peerjs'
 import QrScanner from 'qr-scanner'
 import GamepadView from '../components/GamepadView.vue'
 import { eventNameToId, PEER_STATUS } from '../config.ts'
+import { useMediaQuery } from '../composables/useMediaQuery.ts'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
@@ -48,6 +58,8 @@ onBeforeUnmount(() => {
   qrScanner?.destroy()
   qrScanner = null
 })
+
+const { matches: isLandscape } = useMediaQuery('(orientation: landscape)')
 
 async function startScanning () {
   await QrScanner.listCameras(true)
@@ -136,12 +148,21 @@ function onSendEvent ({ eventName, details }: { eventName: string, details: unkn
     display: flex;
     flex-flow: column nowrap;
     gap: var(--spacer-5);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: fixed;
+    inset: 0;
+
+    @media screen and (orientation: landscape) {
+      flex-flow: row nowrap;
+    }
   }
 
   &__video {
-    height: 80vmin;
+    height: 80dvmin;
     object-fit: cover;
-    width: 80vmin;
+    width: 80dvmin;
   }
 }
 </style>

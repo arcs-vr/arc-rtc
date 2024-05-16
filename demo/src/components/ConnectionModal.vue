@@ -54,16 +54,18 @@ const emit = defineEmits<{
   scoped
 >
 .ConnectionModal {
-  position: fixed;
-  z-indeX: 100;
-  inset: 0;
+  align-items: center;
   background-color: var(--color-dark);
   color: var(--color-light);
   display: flex;
   flex-flow: column nowrap;
   gap: var(--spacer-5);
-  text-align: center;
+  inset: 0;
+  justify-content: center;
   padding: var(--spacer-5);
+  position: fixed;
+  text-align: center;
+  z-indeX: 100;
 
   &__qr {
     display: flex;
@@ -72,10 +74,10 @@ const emit = defineEmits<{
   }
 
   &__close {
-    position: absolute;
-    top: var(--spacer);
-    right: var(--spacer);
     font-size: 2rem;
+    position: absolute;
+    right: var(--spacer);
+    top: var(--spacer);
   }
 }
 </style>

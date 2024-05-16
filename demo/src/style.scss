@@ -84,10 +84,16 @@ a {
 
 strong {
   color: var(--color-primary);
+  font-weight: bold;
 }
 
 em {
   color: var(--color-secondary);
+  font-weight: bold;
+}
+
+b {
+  font-weight: bold;
 }
 
 button {

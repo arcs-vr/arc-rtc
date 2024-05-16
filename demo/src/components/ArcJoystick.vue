@@ -1,22 +1,30 @@
 <template>
   <div
+    :id="id"
     ref="root"
     class="ArcJoystick"
+    @touchstart.passive="updateMovement"
+    @touchmove.passive="updateMovement"
+    @touchend.passive="stopMovement"
   >
     <div class="ArcJoystick__root">
-      <span class="ArcJoystick__center"/>
+      <span
+        v-once
+        class="ArcJoystick__center"
+      />
+
       <div
-        :id="id"
         ref="cursor"
-        :data-animated="(cursorX === 0 && cursorY === 0) || undefined"
+        :data-animated="cursorPosition[0] === 0 && cursorPosition[1] === 0"
         :style="cursorTransform"
         class="ArcJoystick__cursor"
-        @touchstart.passive="startMovement"
-        @touchmove.passive="updateMovement"
-        @touchend.passive="stopMovement"
       />
     </div>
-    <span class="ArcJoystick__label">{{ label }}</span>
+
+    <span
+      v-once
+      class="ArcJoystick__label"
+    >{{ label }}</span>
   </div>
 </template>
 
@@ -24,7 +32,7 @@
   lang="ts"
   setup
 >
-import { computed, shallowRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 
 const props = defineProps<{
   label: string
@@ -38,57 +46,75 @@ const emit = defineEmits<{
 
 const cursor = shallowRef<HTMLElement>()
 const root = shallowRef<HTMLElement>()
-let currentStart: { clientX: number, clientY: number } | null = null
+
+let centerOfJoystick: { clientX: number, clientY: number } | null = null
+let joystickBounds: { width: number, height: number } | null = null
+
 let currentHold: Touch | null = null
-let currentBound: { width: number, height: number } | null = null
-const cursorX = shallowRef(0)
-const cursorY = shallowRef(0)
-const cursorTransform = computed(() => `transform: translate(${cursorX.value}px, ${cursorY.value}px)`)
+const cursorPosition = shallowRef([0, 0])
+const cursorTransform = computed(() => `transform: translate(${cursorPosition.value[0]}px, ${cursorPosition.value[1]}px)`)
 const gradientPoints = 10
 const gradient = computed(() => `radial-gradient(closest-side, ${Array(gradientPoints).fill(0).map((_, i) => `hsl(0deg 0% ${props.easing(i / (gradientPoints - 1)) * 20}%)`).join(', ')})`)
 
-function startMovement () {
-  const cursorRect = cursor.value.getBoundingClientRect()
-  const boundaryRect = root.value.getBoundingClientRect()
+let lastUpdate = 0
+let now = 0
+let resizeObserver: ResizeObserver | null = null
 
-  currentStart = {
-    clientX: Math.round(cursorRect.left + (cursorRect.width / 2)),
-    clientY: Math.round(cursorRect.top + (cursorRect.height / 2))
-  }
+onMounted(async () => {
+  await nextTick()
 
-  currentBound = {
-    width: Math.floor(boundaryRect.width / 2) - 20,
-    height: Math.floor(boundaryRect.height / 2) - 20
-  }
-}
+  resizeObserver = new ResizeObserver(() => {
+    const cursorRect = cursor.value.getBoundingClientRect()
+    const boundaryRect = root.value.getBoundingClientRect()
+    centerOfJoystick = {
+      clientX: Math.round(cursorRect.left + (cursorRect.width / 2)),
+      clientY: Math.round(cursorRect.top + (cursorRect.height / 2))
+    }
+
+    joystickBounds = {
+      width: Math.floor(boundaryRect.width / 2) - 20,
+      height: Math.floor(boundaryRect.height / 2) - 20
+    }
+
+    console.info('calc', centerOfJoystick, joystickBounds)
+  })
+
+  resizeObserver.observe(cursor.value)
+  resizeObserver.observe(root.value)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+})
 
 function absMin (first, second) {
-  const negation = (first < 0 || second < 0) ? -1 : 1
-  const min = Math.min(Math.abs(first), Math.abs(second))
-
-  return negation * min
+  return ((first < 0 || second < 0) ? -1 : 1) * Math.min(Math.abs(first), Math.abs(second))
 }
 
 function updateMovement (event) {
   currentHold = Array.from(event.touches).find(event => event.target.id === props.id)
-  cursorX.value = absMin(currentHold.clientX - currentStart.clientX, currentBound.width)
-  cursorY.value = absMin(currentHold.clientY - currentStart.clientY, currentBound.height)
+  cursorPosition.value = [
+    absMin(currentHold.clientX - centerOfJoystick.clientX, joystickBounds.width),
+    absMin(currentHold.clientY - centerOfJoystick.clientY, joystickBounds.height)
+  ]
 
-  emit(
-    'update',
-    [
-      props.easing(cursorX.value / currentBound.width),
-      props.easing(cursorY.value / currentBound.height)
-    ]
-  )
+  now = performance.now()
+  if (now - lastUpdate > 33) {
+    lastUpdate = now
+
+    emit(
+      'update',
+      [
+        props.easing(cursorPosition.value[0] / joystickBounds.width),
+        props.easing(cursorPosition.value[1] / joystickBounds.height)
+      ]
+    )
+  }
 }
 
 function stopMovement () {
-  cursorX.value = 0
-  cursorY.value = 0
-  currentStart = null
-  currentHold = null
-
+  cursorPosition.value = [0, 0]
   emit('update', [0, 0])
 }
 </script>
@@ -104,28 +130,20 @@ function stopMovement () {
   $cursor-base-third: math.div($cursor-base, 3);
 
   align-items: center;
+  background-image: v-bind(gradient);
   display: flex;
   height: 100%;
   justify-content: center;
   position: relative;
-  width: 100%;
   text-align: center;
-  background-image: v-bind(gradient);
-
-  &__layer {
-    height: 100%;
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-  }
+  width: 100%;
 
   &__root {
     display: block;
     height: $cursor-base;
     position: relative;
     width: $cursor-base;
+    pointer-events: none;
   }
 
   &__center {
@@ -142,14 +160,15 @@ function stopMovement () {
 
   &__cursor {
     background-color: var(--color-light-50p-opaque);
-    background-image: url("@arcs/design/images/joystick_arrows.svg");
-    border: 2px solid var(--color-light-25p-opaque);
+    background-image: url("../assets/icons/joystick_arrows.svg");
     border-radius: 50%;
+    border: 2px solid var(--color-light-25p-opaque);
     display: block;
     height: $cursor-base;
     width: $cursor-base;
+    pointer-events: none;
 
-    &[data-animated] {
+    &[data-animated="true"] {
       transition: transform .2s ease;
     }
   }

@@ -36,6 +36,7 @@
 
 import ArcJoystick from './ArcJoystick.vue'
 import { JOYSTICK_TYPE } from '../config.ts'
+import { Easing } from '@tweenjs/tween.js'
 
 const emit = defineEmits<{
   send: [eventName: string, details: unknown]
@@ -58,7 +59,7 @@ function moveEasing (a: number) {
 }
 
 function lookEasing (a: number) {
-  return a ** 3
+  return (a < 0 ? -1 : 1) * Easing.Sinusoidal.In(a)
 }
 </script>
 
@@ -67,13 +68,12 @@ function lookEasing (a: number) {
   scoped
 >
 .GamepadView {
-  display: grid;
-  grid-template-areas:
-   "move move secondary look look"
-   "move move primary look look";
-  gap: var(--spacer-1);
   background-color: var(--color-light);
-
+  display: grid;
+  gap: var(--spacer-1);
+  grid-template-areas:
+    "move move secondary look look"
+    "move move primary look look";
   position: fixed;
   inset: 0;
 
@@ -82,9 +82,10 @@ function lookEasing (a: number) {
   &__primary,
   &__secondary {
     background-color: var(--color-dark);
-    overflow: hidden;
     color: var(--color-light);
+    overflow: hidden;
     text-transform: uppercase;
+    user-select: none;
   }
 
   &__move {
@@ -95,16 +96,19 @@ function lookEasing (a: number) {
     grid-area: look;
   }
 
-  &__primary {
-    grid-area: primary;
-    background-color: var(--color-primary);
+  &__primary,
+  &__secondary {
     color: var(--color-dark);
   }
 
+  &__primary {
+    background-color: var(--color-primary);
+    grid-area: primary;
+  }
+
   &__secondary {
-    grid-area: secondary;
     background-color: var(--color-secondary);
-    color: var(--color-dark);
+    grid-area: secondary;
   }
 }
 </style>
