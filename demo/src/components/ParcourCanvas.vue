@@ -45,7 +45,7 @@ import { PLAYER_HEIGHT } from '../config.ts'
 import { useNumpadLockedDoor } from '../composables/useNumpadLockedDoor.ts'
 import { useCursor } from '../stores/useCursor.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
-import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import { useGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 
 const root = shallowRef<HTMLDivElement>()
 
@@ -100,8 +100,10 @@ camera.add(
   iconMeshes.secondary
 )
 
+const { loadModel } = await useGLTFLoader()
+
 scene.add(
-  (await CompressedGLTFLoader.loadAsync(roomsGltfUrl)).scene,
+  (await loadModel(roomsGltfUrl)).scene,
 
   ...await Promise.all([
     useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
@@ -171,7 +173,6 @@ function start () {
   :deep(canvas) {
     inset: 0;
     position: absolute;
-    z-index: -1;
   }
 
   &__startButton {

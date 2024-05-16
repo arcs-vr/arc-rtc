@@ -18,12 +18,12 @@
 
     <button
       class="GamepadView__secondary"
-      @click="sendSecondary"
+      @touchstart.passive="sendSecondary"
     >Secondary
     </button>
     <button
       class="GamepadView__primary"
-      @click="sendPrimary"
+      @touchstart.passive="sendPrimary"
     >Primary
     </button>
   </div>

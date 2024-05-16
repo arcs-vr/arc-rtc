@@ -4,7 +4,7 @@ import numpadGltfUrl from '../assets/models/numbers/numpad.gltf?url'
 import { usePathfinding } from '../stores/usePathfinding.ts'
 import { Vector3Params } from '../types.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
-import { CompressedGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
+import { useGLTFLoader } from '../tools/CompressedGTLFLoader.ts'
 import { shallowRef, watchEffect } from 'vue'
 import { Easing, Tween } from '@tweenjs/tween.js'
 
@@ -15,7 +15,8 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   const { addObject } = await useRaycastPointer()
 
   if (!gltf) {
-    gltf = await CompressedGLTFLoader.loadAsync(numpadGltfUrl)
+    const { loadModel } = await useGLTFLoader()
+    gltf = await loadModel(numpadGltfUrl)
   }
 
   const newDoor = gltf.scene.clone(true)
