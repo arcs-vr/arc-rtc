@@ -29,10 +29,8 @@ defineProps<{
   align-items: center;
   display: flex;
   justify-content: center;
-  width: min(500px, 80vw);
-
-  &[data-small] {
-    width: min(250px, 40vw);
-  }
+  aspect-ratio: var(--logo-aspect-ratio);
+  --logo-width: 100%;
+  --logo-height: auto;
 }
 </style>

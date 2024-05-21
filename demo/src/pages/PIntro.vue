@@ -1,6 +1,10 @@
 <template>
   <div class="PIntro">
-    <LoadingAnimation small/>
+    <div
+      class="PIntro__animation"
+      data-logo-target
+    ></div>
+
     <h1>Arbitrary Remote Control System</h1>
     <p>This demo contains a <strong>3D experience</strong> and the accompanying <em>gamepad
       controller</em>.</p>
@@ -57,7 +61,6 @@
   setup
 >
 import { ROUTE_PARCOUR, ROUTE_REMOTE } from '../routes.ts'
-import LoadingAnimation from '../components/LoadingAnimation.vue'
 import ThemedButton from '../components/ThemedButton.vue'
 </script>
 
@@ -73,6 +76,11 @@ import ThemedButton from '../components/ThemedButton.vue'
   align-items: center;
   font-size: 1.2rem;
   max-width: 500px;
+
+  &__animation {
+    width: 250px;
+    aspect-ratio: var(--logo-aspect-ratio);
+  }
 
   &__buttons {
     display: flex;

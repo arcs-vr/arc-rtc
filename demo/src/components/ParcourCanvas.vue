@@ -8,10 +8,9 @@
   >
     <Transition name="fade">
       <button
-        v-if="canStart && !isLocked && !animationFrameID"
+        v-if="canStart && !isLocked"
         class="ParcourCanvas__startButton"
         type="button"
-        @click="start"
       >
         Click to start
       </button>
@@ -24,7 +23,7 @@
   setup
 >
 import '../bvh-raycasting.ts'
-import { nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { useEnvMap } from '../composables/useEnvMap.ts'
 import envMapUrl from '../assets/envmap/brown_photostudio_02_1k.hdr?url'
 import { Clock, Scene } from 'three'
@@ -153,10 +152,17 @@ onBeforeUnmount(() => {
   animationFrameID = null
 })
 
-function start () {
-  lockPointer()
-  animationFrameID = window.requestAnimationFrame(render)
-}
+watch(isLocked, (newIsLocked) => {
+  if (newIsLocked && !animationFrameID) {
+    animationFrameID = window.requestAnimationFrame(render)
+    clock.start()
+    return
+  }
+
+  window.cancelAnimationFrame(animationFrameID)
+  animationFrameID = null
+  clock.stop()
+})
 </script>
 
 <style
@@ -174,10 +180,12 @@ function start () {
   :deep(canvas) {
     inset: 0;
     position: absolute;
+    cursor: pointer;
   }
 
   &__startButton {
     background-color: var(--color-primary);
+    pointer-events: none;
     left: 50%;
     padding: var(--spacer);
     position: absolute;

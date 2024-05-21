@@ -2,7 +2,6 @@
   <div class="ConnectionModal">
     <h1>Connect</h1>
     <p>You can use a smartphone or other touch device as a gamepad.</p>
-    <p>Click the button below to generate your secret ID and connect to your other device.</p>
 
     <span><em>Status:</em> {{ status }}</span>
 
