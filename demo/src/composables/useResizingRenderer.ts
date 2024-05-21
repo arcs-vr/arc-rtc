@@ -1,5 +1,5 @@
 import { useResizeListener } from './useResizeListener.ts'
-import { PCFSoftShadowMap, PerspectiveCamera, SRGBColorSpace, WebGLRenderer } from 'three'
+import { PCFSoftShadowMap, PerspectiveCamera, Scene, SRGBColorSpace, WebGLRenderer } from 'three'
 
 export function useResizingRenderer (canvas: HTMLCanvasElement) {
   const renderer = new WebGLRenderer(
@@ -20,6 +20,10 @@ export function useResizingRenderer (canvas: HTMLCanvasElement) {
     renderer.setSize(width, height)
     camera.aspect = width / height
     camera.updateProjectionMatrix()
+
+    if (camera.parent instanceof Scene) {
+      renderer.render(camera.parent, camera)
+    }
   })
 
   return {

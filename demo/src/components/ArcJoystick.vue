@@ -75,8 +75,6 @@ onMounted(async () => {
       width: Math.floor(boundaryRect.width / 2) - 20,
       height: Math.floor(boundaryRect.height / 2) - 20
     }
-
-    console.info('calc', centerOfJoystick, joystickBounds)
   })
 
   resizeObserver.observe(cursor.value)

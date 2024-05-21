@@ -16,6 +16,11 @@
         v-else
         class="PRemote__scanner"
       >
+        <div
+          class="PRemote__animation"
+          data-logo-target
+        ></div>
+
         <div>
           <h1>Remote Gamepad</h1>
           <p>Scan the QR Code on your desktop or laptop.</p>
@@ -35,15 +40,24 @@
   setup
 >
 import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
-import { DataConnection, Peer } from 'peerjs'
 import QrScanner from 'qr-scanner'
 import GamepadView from '../components/GamepadView.vue'
-import { eventNameToId, PEER_STATUS } from '../config.ts'
+import { PEER_STATUS } from '../config.ts'
 import { useMediaQuery } from '../composables/useMediaQuery.ts'
+import { usePeerEmitter } from '../composables/usePeerEmitter.ts'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
 let qrScanner: QrScanner | null = null
+
+const { matches: isLandscape } = useMediaQuery('(orientation: landscape)')
+const { status, connect, send, destroy: destroyPeerEmitter } = usePeerEmitter()
+
+watch(status, async (newStatus) => {
+  if (newStatus === PEER_STATUS.NOT_CONNECTED) {
+    return startScanning()
+  }
+})
 
 onMounted(async () => {
   if (checkUrl(window.location.href)) {
@@ -57,9 +71,8 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   qrScanner?.destroy()
   qrScanner = null
+  destroyPeerEmitter()
 })
-
-const { matches: isLandscape } = useMediaQuery('(orientation: landscape)')
 
 async function startScanning () {
   await QrScanner.listCameras(true)
@@ -81,8 +94,11 @@ function checkUrl (urlString: string) {
   const url = new URL(urlString)
   if (url.searchParams.has('id')) {
     secret.value = url.searchParams.get('id') ?? undefined
-    connect()
-    return true
+
+    if (secret.value) {
+      connect(secret.value)
+      return true
+    }
   }
 
   return false
@@ -96,45 +112,8 @@ function onQRScanned (result: QrScanner.ScanResult) {
   }
 }
 
-let peer: Peer
-let conn: DataConnection
-const status = shallowRef<PEER_STATUS>(PEER_STATUS.NOT_CONNECTED)
-
-watch(status, async (newStatus) => {
-  if (newStatus === PEER_STATUS.NOT_CONNECTED) {
-    return startScanning()
-  }
-})
-
-function connect () {
-  peer?.destroy()
-  peer = new Peer({ secure: true })
-
-  peer.on('open', () => {
-    if (!secret.value) {
-      return
-    }
-
-    conn = peer.connect(secret.value)
-
-    conn.on('open', function () {
-      status.value = PEER_STATUS.CONNECTED
-    })
-
-    conn.on('error', function (err) {
-      status.value = PEER_STATUS.NOT_CONNECTED
-      console.error(err)
-    })
-
-    conn.on('disconnected', function () {
-      status.value = PEER_STATUS.NOT_CONNECTED
-    })
-  })
-}
-
 function onSendEvent ({ eventName, details }: { eventName: string, details: unknown }) {
-  const id = eventNameToId.get(eventName)
-  conn?.send({ i: id, d: details })
+  send(eventName, details)
 }
 </script>
 
@@ -143,6 +122,11 @@ function onSendEvent ({ eventName, details }: { eventName: string, details: unkn
   scoped
 >
 .PRemote {
+
+  &__animation {
+    width: 250px;
+    aspect-ratio: var(--logo-aspect-ratio);
+  }
 
   &__scanner {
     display: flex;
@@ -154,15 +138,16 @@ function onSendEvent ({ eventName, details }: { eventName: string, details: unkn
     position: fixed;
     inset: 0;
 
-    @media screen and (orientation: landscape) {
+    @media screen and (orientation: landscape) and (max-width: 1920px) {
       flex-flow: row nowrap;
     }
   }
 
   &__video {
-    height: 80dvmin;
+    height: min(80dvmin, 500px);
     object-fit: cover;
-    width: 80dvmin;
+    width: min(80dvmin, 500px);
+    background-color: var(--color-dark-25p-lighter);
   }
 }
 </style>
