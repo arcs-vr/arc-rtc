@@ -54,6 +54,7 @@
 import LoadingAnimation from './components/LoadingAnimation.vue'
 import { useRouter } from 'vue-router'
 import { ComponentPublicInstance, nextTick, shallowRef } from 'vue'
+import { useResizeListener } from './composables/useResizeListener.ts'
 
 const { afterEach } = useRouter()
 
@@ -66,6 +67,10 @@ afterEach(async () => {
   updateLogo(!isLogoPlaced.value)
 })
 
+useResizeListener(() => {
+  updateLogo(true)
+})
+
 function updateLogo (instant?: boolean) {
   const target = document.querySelector('[data-logo-target]')
 
@@ -75,6 +80,7 @@ function updateLogo (instant?: boolean) {
     if (instant) {
       logo.value.$el.setAttribute('style', `top: ${rect.top}px; width: ${rect.width}px; height: ${rect.height}px; left: ${rect.left}px; transform: translate(0, 0);`)
       isLogoPlaced.value = true
+      return
     }
 
     logo.value.$el.animate(
