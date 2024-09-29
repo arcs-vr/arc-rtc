@@ -44,7 +44,7 @@ export async function useUserControls (camera: Camera) {
     joystickControls.dispose()
   }
 
-  function update (time: number, delta: number): void {
+  function update (delta: number): void {
     joystickControls.updateCamera(delta)
 
     copyVector

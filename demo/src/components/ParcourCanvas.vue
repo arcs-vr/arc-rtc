@@ -27,7 +27,7 @@ import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { useEnvMap } from '../composables/useEnvMap.ts'
 import envMapUrl from '../assets/envmap/brown_photostudio_02_1k.hdr?url'
 import { Clock, Scene } from 'three'
-import { update as updateAllTweens } from '@tweenjs/tween.js'
+import { getAll as getAllTweens, Tween, update as updateAllTweens } from '@tweenjs/tween.js'
 import { useUserControls } from '../composables/useUserControls.ts'
 import { useFloorSign } from '../composables/useFloorSign.ts'
 import { useWallSign } from '../composables/useWallSign.ts'
@@ -122,7 +122,7 @@ function render (time: number) {
   stats?.begin()
   const delta = clock.getDelta()
   updateAllTweens(time)
-  updateControls(time, delta)
+  updateControls(delta)
   updateRaycastPointer(camera)
   renderer.render(scene, camera)
   stats?.end()
@@ -152,16 +152,28 @@ onBeforeUnmount(() => {
   animationFrameID = null
 })
 
+let pausedTweens: Tween<unknown>[] = []
 watch(isLocked, (newIsLocked) => {
   if (newIsLocked && !animationFrameID) {
     animationFrameID = window.requestAnimationFrame(render)
     clock.start()
+
+    for (const tween of pausedTweens) {
+      tween.resume()
+    }
+    pausedTweens.length = 0
+
     return
   }
 
   window.cancelAnimationFrame(animationFrameID)
   animationFrameID = null
   clock.stop()
+
+  pausedTweens = getAllTweens()
+  for (const tween of pausedTweens) {
+    tween.pause()
+  }
 })
 </script>
 
