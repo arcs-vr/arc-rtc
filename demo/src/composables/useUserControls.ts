@@ -21,7 +21,7 @@ export async function useUserControls (camera: Camera) {
     lookControls = new PointerLockControls(camera, element)
     lookControls.addEventListener('lock', () => (isLocked.value = true))
     lookControls.addEventListener('unlock', () => (isLocked.value = false))
-    lookControls.connect()
+    lookControls.connect(element)
 
     const options = {
       speed: 5,

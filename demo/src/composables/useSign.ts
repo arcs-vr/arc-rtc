@@ -1,9 +1,10 @@
-import { Mesh, RepeatWrapping, Scene, TextureLoader } from 'three'
+import { Mesh, RepeatWrapping, TextureLoader } from 'three'
 import { Vector3Params } from '../types.ts'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 let textureLoader = new TextureLoader()
 
-export async function useSign (position: Vector3Params, rotation: Vector3Params, gltf: Scene, url: string) {
+export async function useSign (position: Vector3Params, rotation: Vector3Params, gltf: GLTF, url: string) {
   const newSign = gltf.scene.clone(true)
 
   newSign.position.set(...position)

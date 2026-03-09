@@ -6,6 +6,7 @@ import touchIconUrl from '../assets/icons/baseline_touch_app_black_18dp.png'
 import jumpIconUrl from '../assets/icons/baseline_upgrade_black_18dp.png'
 import { defineStore } from './defineStore.ts'
 import { Easing, Tween } from '@tweenjs/tween.js'
+import { useTweenGroup } from '../composables/useTweenGroup.ts'
 
 const ICON_ANIMATION_DURATION = 200
 const ICON_EASING = Easing.Cubic.Out
@@ -26,11 +27,17 @@ export const useCursor = defineStore(async () => {
 
   const cursor = new Mesh(geometry, material)
 
+  const tweenGroup = useTweenGroup()
   const cursorTween = new Tween(cursor.scale)
     .to({ x: 0.75, y: 0.75, z: 0.75 }, 300)
     .yoyo(true)
     .repeat(1)
     .easing(Easing.Cubic.Out)
+    .onComplete(() => {
+      tweenGroup.remove(cursorTween)
+    })
+
+  tweenGroup.add(cursorTween)
 
   const spriteGeometry = new PlaneGeometry(0.02, 0.02, 1)
   const spriteMaterial = new MeshBasicMaterial({
@@ -94,15 +101,22 @@ export const useCursor = defineStore(async () => {
     mesh.material.map = texture
     mesh.material.needsUpdate = true
 
-    iconTweens[which]?.stop()
+    if (iconTweens[which]){
+      iconTweens[which].stop()
+      tweenGroup.remove(iconTweens[which])
+    }
 
-    iconTweens[which] = new Tween(mesh.material)
+    const newTween = new Tween(mesh.material)
       .to({ opacity: 0.75 }, ICON_ANIMATION_DURATION)
       .easing(ICON_EASING)
       .onComplete(() => {
         iconTweens[which] = null
+        tweenGroup.remove(newTween)
       })
       .start()
+
+    iconTweens[which] = newTween
+    tweenGroup.add(newTween)
   }
 
   function clearIcon (which: 'primary' | 'secondary') {
@@ -111,9 +125,12 @@ export const useCursor = defineStore(async () => {
       return
     }
 
-    iconTweens[which]?.stop()
+    if (iconTweens[which]){
+      iconTweens[which].stop()
+      tweenGroup.remove(iconTweens[which])
+    }
 
-    iconTweens[which] = new Tween(mesh.material)
+    const newTween = new Tween(mesh.material)
       .to({ opacity: 0 }, ICON_ANIMATION_DURATION)
       .easing(ICON_EASING)
       .onComplete(() => {
@@ -121,8 +138,12 @@ export const useCursor = defineStore(async () => {
         mesh.material.needsUpdate = true
         mesh.visible = false
         iconTweens[which] = null
+        tweenGroup.remove(newTween)
       })
       .start()
+
+    iconTweens[which] = newTween
+    tweenGroup.add(newTween)
   }
 
   function animateClick () {

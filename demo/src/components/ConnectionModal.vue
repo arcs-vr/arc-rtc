@@ -11,29 +11,29 @@
 
       <label for="peer-id">QR Code</label>
       <output
-        id="peer-id"
-        name="peer-id"
+          id="peer-id"
+          name="peer-id"
       >
         <img
-          :src="qrData"
-          alt=""
+            :src="qrData"
+            alt=""
         />
       </output>
     </div>
 
     <button
-      class="ConnectionModal__close"
-      title="Close"
-      type="button"
-      @click="emit('close')"
+        class="ConnectionModal__close"
+        title="Close"
+        type="button"
+        @click="emit('close')"
     >&times;
     </button>
   </div>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import { PEER_STATUS } from '../config.ts'
 
@@ -49,8 +49,8 @@ const emit = defineEmits<{
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .ConnectionModal {
   align-items: center;

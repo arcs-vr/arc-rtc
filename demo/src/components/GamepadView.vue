@@ -1,37 +1,37 @@
 <template>
   <div class="GamepadView">
     <ArcJoystick
-      id="move"
-      :easing="moveEasing"
-      class="GamepadView__move"
-      label="move"
-      @update="sendStickMove(JOYSTICK_TYPE.MOVE, $event)"
+        id="move"
+        :easing="moveEasing"
+        class="GamepadView__move"
+        label="move"
+        @update="sendStickMove(JOYSTICK_TYPE.MOVE, $event)"
     />
 
     <ArcJoystick
-      id="look"
-      :easing="lookEasing"
-      class="GamepadView__look"
-      label="look"
-      @update="sendStickMove(JOYSTICK_TYPE.LOOK, $event)"
+        id="look"
+        :easing="lookEasing"
+        class="GamepadView__look"
+        label="look"
+        @update="sendStickMove(JOYSTICK_TYPE.LOOK, $event)"
     />
 
     <button
-      class="GamepadView__secondary"
-      @touchstart.passive="sendSecondary"
+        class="GamepadView__secondary"
+        @touchstart.passive="sendSecondary"
     >Secondary
     </button>
     <button
-      class="GamepadView__primary"
-      @touchstart.passive="sendPrimary"
+        class="GamepadView__primary"
+        @touchstart.passive="sendPrimary"
     >Primary
     </button>
   </div>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 
 import ArcJoystick from './ArcJoystick.vue'
@@ -39,19 +39,19 @@ import { JOYSTICK_TYPE } from '../config.ts'
 import { Easing } from '@tweenjs/tween.js'
 
 const emit = defineEmits<{
-  send: [eventName: string, details: unknown]
+  send: [eventName: string, details?: unknown]
 }>()
 
 function sendStickMove (type: JOYSTICK_TYPE, [x, y]: number[]) {
-  emit('send', { eventName: 'stickmove', details: [type, x, y] })
+  emit('send', 'stickmove', [type, x, y])
 }
 
 function sendPrimary () {
-  emit('send', { eventName: 'primary' })
+  emit('send', 'primary')
 }
 
 function sendSecondary () {
-  emit('send', { eventName: 'secondary' })
+  emit('send', 'secondary')
 }
 
 function moveEasing (a: number) {
@@ -64,8 +64,8 @@ function lookEasing (a: number) {
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .GamepadView {
   background-color: var(--color-light);

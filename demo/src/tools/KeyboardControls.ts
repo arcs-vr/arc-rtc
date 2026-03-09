@@ -9,15 +9,11 @@ export type KeyboardControlsOptions = {
 
 export class KeyboardControls {
   public readonly velocity: Vector3 = new Vector3(0, 0, 0)
-
+  public canJump: boolean = false
   private appliedSpeedFactor: number = 1
-
   private readonly keys: Set<string> = new Set()
-
   private readonly options: KeyboardControlsOptions
   private readonly domElement: HTMLElement
-
-  private canJump: boolean = false
 
   constructor (domElement: HTMLElement, options: KeyboardControlsOptions) {
     this.options = options

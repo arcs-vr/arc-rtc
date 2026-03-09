@@ -3,8 +3,8 @@
     <Transition name="fade">
       <template v-if="status === PEER_STATUS.CONNECTED">
         <GamepadView
-          v-if="isLandscape"
-          @send="onSendEvent"
+            v-if="isLandscape"
+            @send="onSendEvent"
         />
 
         <div v-else>
@@ -13,12 +13,12 @@
       </template>
 
       <div
-        v-else
-        class="PRemote__scanner"
+          v-else
+          class="PRemote__scanner"
       >
         <div
-          class="PRemote__animation"
-          data-logo-target
+            class="PRemote__animation"
+            data-logo-target
         ></div>
 
         <div>
@@ -26,18 +26,29 @@
           <p>Scan the QR Code on your desktop or laptop.</p>
         </div>
 
-        <video
-          ref="qrCamera"
-          class="PRemote__video"
-        ></video>
+        <div class="PRemote__video_wrapper">
+          <template v-if="cameraList == null">
+            <p>Loading camera…</p>
+          </template>
+          <template v-else-if="cameraList.length === 0">
+            <p>No cameras available.</p>
+            <p>Please open the page on a device with a camera.</p>
+          </template>
+          <template v-else>
+            <video
+                ref="qrCamera"
+                class="PRemote__video"
+            ></video>
+          </template>
+        </div>
       </div>
     </Transition>
   </div>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import QrScanner from 'qr-scanner'
@@ -48,6 +59,7 @@ import { usePeerEmitter } from '../composables/usePeerEmitter.ts'
 
 const secret = shallowRef<string>()
 const qrCamera = shallowRef<HTMLVideoElement>()
+const cameraList = shallowRef<QrScanner.Camera[] | null>(null)
 let qrScanner: QrScanner | null = null
 
 const { matches: isLandscape } = useMediaQuery('(orientation: landscape)')
@@ -65,7 +77,12 @@ onMounted(async () => {
   }
 
   await nextTick()
-  return startScanning()
+
+  try {
+    await startScanning()
+  } catch (error) {
+    console.info(error)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -75,16 +92,19 @@ onBeforeUnmount(() => {
 })
 
 async function startScanning () {
-  await QrScanner.listCameras(true)
+  cameraList.value = await QrScanner.listCameras(true)
+  if (!cameraList.value.length) {
+    return
+  }
 
   if (!qrCamera.value) {
     return
   }
 
   qrScanner = new QrScanner(
-    qrCamera.value,
-    onQRScanned,
-    {},
+      qrCamera.value,
+      onQRScanned,
+      {},
   )
 
   return qrScanner.start()
@@ -118,8 +138,8 @@ function onSendEvent ({ eventName, details }: { eventName: string, details: unkn
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .PRemote {
 
@@ -143,10 +163,21 @@ function onSendEvent ({ eventName, details }: { eventName: string, details: unkn
     }
   }
 
-  &__video {
-    height: min(80dvmin, 500px);
-    object-fit: cover;
+  &__video_wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--spacer);
+    align-items: center;
+    height: auto;
+    aspect-ratio: 1;
     width: min(80dvmin, 500px);
+  }
+
+  &__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     background-color: var(--color-dark-25p-lighter);
   }
 }

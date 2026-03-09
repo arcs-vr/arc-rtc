@@ -1,17 +1,17 @@
 <template>
   <Component
-    :is="href ? 'button' : 'a'"
-    :data-secondary="secondary || undefined"
-    :href="href"
-    class="ThemedButton"
+      :is="href ? 'button' : 'a'"
+      :data-secondary="secondary || undefined"
+      :href="href"
+      class="ThemedButton"
   >
     <slot/>
   </Component>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 defineProps<{
   href?: string,
@@ -21,8 +21,8 @@ defineProps<{
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .ThemedButton {
   align-items: center;

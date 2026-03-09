@@ -1,8 +1,8 @@
 <template>
   <div class="PIntro">
     <div
-      class="PIntro__animation"
-      data-logo-target
+        class="PIntro__animation"
+        data-logo-target
     ></div>
 
     <h1>Arbitrary Remote Control System</h1>
@@ -15,39 +15,39 @@
 
     <div class="PIntro__buttons">
       <RouterLink
-        v-slot="{ navigate, href }"
-        :to="{ name: ROUTE_PARCOUR }"
-        custom
+          v-slot="{ navigate, href }"
+          :to="{ name: ROUTE_PARCOUR }"
+          custom
       >
         <ThemedButton
-          :href="href"
-          @click="navigate"
+            :href="href"
+            @click="navigate"
         >
           <img
-            alt=""
-            height="32"
-            src="../assets/icons/baseline_directions_run_black_18dp.png"
-            width="32"
+              alt=""
+              height="32"
+              src="../assets/icons/baseline_directions_run_black_18dp.png"
+              width="32"
           >
           Open Parcour
         </ThemedButton>
       </RouterLink>
 
       <RouterLink
-        v-slot="{ navigate, href }"
-        :to="{ name: ROUTE_REMOTE }"
-        custom
+          v-slot="{ navigate, href }"
+          :to="{ name: ROUTE_REMOTE }"
+          custom
       >
         <ThemedButton
-          :href="href"
-          secondary
-          @click="navigate"
+            :href="href"
+            secondary
+            @click="navigate"
         >
           <img
-            alt=""
-            height="32px"
-            src="../assets/icons/videogame_asset-24px.svg"
-            width="32px"
+              alt=""
+              height="32px"
+              src="../assets/icons/videogame_asset-24px.svg"
+              width="32px"
           >
           Open Remote
         </ThemedButton>
@@ -57,16 +57,16 @@
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import { ROUTE_PARCOUR, ROUTE_REMOTE } from '../routes.ts'
 import ThemedButton from '../components/ThemedButton.vue'
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .PIntro {
   display: flex;

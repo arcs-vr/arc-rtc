@@ -1,4 +1,4 @@
-import { RepeatWrapping, Scene } from 'three'
+import { Mesh, MeshStandardMaterial, RepeatWrapping } from 'three'
 
 import { usePathfinding } from '../stores/usePathfinding.ts'
 import { Vector3Params } from '../types.ts'
@@ -6,8 +6,10 @@ import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
 import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
 import { shallowRef, watchEffect } from 'vue'
 import { Easing, Tween } from '@tweenjs/tween.js'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { useTweenGroup } from './useTweenGroup.ts'
 
-let gltf: Scene | undefined
+let gltf: GLTF | undefined
 
 export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: string, section: string) {
   const { makeDoorWalkable } = await usePathfinding()
@@ -20,21 +22,23 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
 
   const newDoor = gltf.scene.clone(true)
   const currentCode = shallowRef<string>('')
-
+  const tweenGroup = useTweenGroup()
   newDoor.position.set(...position)
 
   const digits = []
   for (let i = 0; i < 6; i++) {
-    const digit = newDoor.getObjectByName(`numpad_display_${i}`)
+    const digit = newDoor.getObjectByName(`numpad_display_${i}`) as Mesh
     digits.push(digit)
 
-    digit.material = digit.material.clone()
-    digit.material.map = digit.material.map.clone()
-    digit.material.map.wrapS = RepeatWrapping
-    digit.material.map.wrapT = RepeatWrapping
+    let material = (Array.isArray(digit.material) ? digit.material[0] : digit.material) as MeshStandardMaterial
 
-    digit.material.needsUpdate = true
-    digit.material.map.needsUpdate = true
+    digit.material = material.clone()
+    material.map = material.map.clone()
+    material.map.wrapS = RepeatWrapping
+    material.map.wrapT = RepeatWrapping
+
+    material.needsUpdate = true
+    material.map.needsUpdate = true
   }
 
   digits.reverse()
@@ -53,7 +57,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
   })
 
   for (let i = 0; i < 10; i++) {
-    addObject(newDoor.getObjectByName(`numpad_button_${i}`), {
+    addObject(newDoor.getObjectByName(`numpad_button_${i}`) as Mesh, {
       maxDistance: 2,
       iconPrimary: 'touch',
       onPrimary () {
@@ -66,7 +70,7 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
     })
   }
 
-  addObject(newDoor.getObjectByName('numpad_button_enter'), {
+  addObject(newDoor.getObjectByName('numpad_button_enter') as Mesh, {
     maxDistance: 2,
     iconPrimary: 'touch',
     onPrimary () {
@@ -75,21 +79,29 @@ export async function useNumpadLockedDoor (position: Vector3Params, unlockCode: 
         const bigDoor = newDoor.getObjectByName('numpad_door_big')
         const smallDoor = newDoor.getObjectByName('numpad_door_small')
 
-        new Tween(bigDoor.position)
+        const bigTween = new Tween(bigDoor.position)
           .easing(Easing.Linear.InOut)
           .to({ z: bigDoor.position.z - 9.4 }, 3_000)
           .start()
+          .onComplete(() => {
+            tweenGroup.remove(bigTween)
+          })
 
-        new Tween(smallDoor.position)
+        const smallTween = new Tween(smallDoor.position)
           .easing(Easing.Linear.InOut)
           .delay(1_500)
           .to({ z: smallDoor.position.z - 4.7 }, 1_500)
           .start()
+          .onComplete(() => {
+            tweenGroup.remove(smallTween)
+          })
+
+        tweenGroup.add(bigTween, smallTween)
       }
     }
   })
 
-  addObject(newDoor.getObjectByName('numpad_button_clear'), {
+  addObject(newDoor.getObjectByName('numpad_button_clear') as Mesh, {
     maxDistance: 2,
     iconPrimary: 'touch',
     onPrimary () {

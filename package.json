@@ -7,5 +7,6 @@
   "scripts": {
     "demo:dev": "yarn workspace @arcs/demo run dev --host",
     "demo:build": "yarn workspace @arcs/demo build"
-  }
+  },
+  "packageManager": "yarn@4.13.0"
 }

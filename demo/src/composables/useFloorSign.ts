@@ -1,10 +1,11 @@
-import { Scene } from 'three'
-import { useSign, Vector3Params } from './useSign.ts'
+import { useSign } from './useSign.ts'
 import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Vector3Params } from '../types.ts'
 
-let gltf: Scene | undefined
+let gltf: GLTF | undefined
 
-export async function useFloorSign (position: Vector3Params, rotation: Vector3Params, url) {
+export async function useFloorSign (position: Vector3Params, rotation: Vector3Params, url: string) {
   if (!gltf) {
     const { loadModel } = await useGLTFLoader()
     gltf = await loadModel('models/arc-sign-floor/arc-sign-floor.gltf')

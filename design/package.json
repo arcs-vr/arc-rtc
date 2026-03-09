@@ -23,6 +23,6 @@
   "style": "./src/cd.scss",
   "main": "./src/cd.scss",
   "dependencies": {
-    "@fontsource/fira-sans": "^5.0.20"
+    "@fontsource/fira-sans": "^5.2.7"
   }
 }

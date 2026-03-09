@@ -1,15 +1,15 @@
 <template>
   <Transition
-    mode="out-in"
-    name="fade"
+      mode="out-in"
+      name="fade"
   >
     <Suspense @resolve="emit('loaded')">
       <ParcourCanvas/>
 
       <template #fallback>
         <div
-          class="PParcour__animation"
-          data-logo-target
+            class="PParcour__animation"
+            data-logo-target
         ></div>
       </template>
     </Suspense>
@@ -17,31 +17,31 @@
 
   <Transition name="fade">
     <ConnectionModal
-      v-if="isConnectionModalOpen && qrData"
-      :qr-data="qrData"
-      :status="status"
-      @close="onConnectionModalClose"
+        v-if="isConnectionModalOpen && qrData"
+        :qr-data="qrData"
+        :status="status"
+        @close="onConnectionModalClose"
     />
   </Transition>
 
   <button
-    class="PParcour__connectButton"
-    title="Use phone as gamepad"
-    type="button"
-    @click="openModal"
+      class="PParcour__connectButton"
+      title="Use phone as gamepad"
+      type="button"
+      @click="openModal"
   >
     <img
-      alt=""
-      height="48px"
-      src="../assets/icons/videogame_asset-24px.svg"
-      width="48px"
+        alt=""
+        height="48px"
+        src="../assets/icons/videogame_asset-24px.svg"
+        width="48px"
     >
   </button>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import ParcourCanvas from '../components/ParcourCanvas.vue'
 import ConnectionModal from '../components/ConnectionModal.vue'
@@ -88,8 +88,8 @@ function onConnectionModalClose () {
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .PParcour {
 

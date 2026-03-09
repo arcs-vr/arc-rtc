@@ -1,10 +1,10 @@
-import { Scene } from 'three'
 import { useSign } from './useSign.ts'
 
 import { Vector3Params } from '../types.ts'
 import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
-let gltf: Scene | undefined
+let gltf: GLTF | undefined
 
 export async function useWallSign (position: Vector3Params, rotation: Vector3Params, url) {
   if (!gltf) {

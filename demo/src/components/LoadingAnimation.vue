@@ -1,14 +1,14 @@
 <template>
   <div
-    :data-small="small || undefined"
-    class="LoadingAnimation"
-    v-html="arcLogo"
+      :data-small="small || undefined"
+      class="LoadingAnimation"
+      v-html="arcLogo"
   />
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import arcLogo from '@arcs/design/images/arc-logo.svg?raw'
 
@@ -18,12 +18,12 @@ defineProps<{
 </script>
 
 <style lang="scss">
-@import "@arcs/design/src/logo-animation.scss";
+@use "@arcs/design/src/logo-animation.scss";
 </style>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .LoadingAnimation {
   align-items: center;

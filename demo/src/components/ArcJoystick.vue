@@ -1,36 +1,36 @@
 <template>
   <div
-    :id="id"
-    ref="root"
-    class="ArcJoystick"
-    @touchstart.passive="updateMovement"
-    @touchmove.passive="updateMovement"
-    @touchend.passive="stopMovement"
+      :id="id"
+      ref="root"
+      class="ArcJoystick"
+      @touchstart.passive="updateMovement"
+      @touchmove.passive="updateMovement"
+      @touchend.passive="stopMovement"
   >
     <div class="ArcJoystick__root">
       <span
-        v-once
-        class="ArcJoystick__center"
+          v-once
+          class="ArcJoystick__center"
       />
 
       <div
-        ref="cursor"
-        :data-animated="cursorPosition[0] === 0 && cursorPosition[1] === 0"
-        :style="cursorTransform"
-        class="ArcJoystick__cursor"
+          ref="cursor"
+          :data-animated="cursorPosition[0] === 0 && cursorPosition[1] === 0"
+          :style="cursorTransform"
+          class="ArcJoystick__cursor"
       />
     </div>
 
     <span
-      v-once
-      class="ArcJoystick__label"
+        v-once
+        class="ArcJoystick__label"
     >{{ label }}</span>
   </div>
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import { computed, nextTick, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 
@@ -86,12 +86,12 @@ onBeforeUnmount(() => {
   resizeObserver = null
 })
 
-function absMin (first, second) {
+function absMin (first: number, second: number) {
   return ((first < 0 || second < 0) ? -1 : 1) * Math.min(Math.abs(first), Math.abs(second))
 }
 
-function updateMovement (event) {
-  currentHold = Array.from(event.touches).find(event => event.target.id === props.id)
+function updateMovement (event: TouchEvent) {
+  currentHold = Array.from(event.touches).find(event => (event.target as HTMLElement).id === props.id)
   cursorPosition.value = [
     absMin(currentHold.clientX - centerOfJoystick.clientX, joystickBounds.width),
     absMin(currentHold.clientY - centerOfJoystick.clientY, joystickBounds.height)
@@ -102,11 +102,11 @@ function updateMovement (event) {
     lastUpdate = now
 
     emit(
-      'update',
-      [
-        props.easing(cursorPosition.value[0] / joystickBounds.width),
-        props.easing(cursorPosition.value[1] / joystickBounds.height)
-      ]
+        'update',
+        [
+          props.easing(cursorPosition.value[0] / joystickBounds.width),
+          props.easing(cursorPosition.value[1] / joystickBounds.height)
+        ]
     )
   }
 }
@@ -118,8 +118,8 @@ function stopMovement () {
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 @use "sass:math";
 

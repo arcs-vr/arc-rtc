@@ -1,16 +1,16 @@
 import { Ref, shallowRef, watchEffect } from 'vue'
-import QRCode from 'qrcode'
+import { type QRCodeToDataURLOptions, toDataURL } from 'qrcode'
 
 export function useQRCode (
   text: Ref<string>,
-  options?: QRCode.QRCodeToDataURLOptions,
+  options?: QRCodeToDataURLOptions,
 ) {
   const result = shallowRef<string | undefined>(undefined)
 
   watchEffect(
     async () => {
       if (text.value) {
-        result.value = text.value ? await QRCode.toDataURL(text.value, options) : undefined
+        result.value = text.value ? (await toDataURL(text.value, options)) : undefined
       }
     },
   )

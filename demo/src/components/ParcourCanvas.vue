@@ -1,16 +1,14 @@
 <template>
   <div
-    ref="root"
-    class="ParcourCanvas"
-    @click="lockPointer"
-    @lock="showStartButton = false"
-    @unlock="showStartButton = true"
+      ref="root"
+      class="ParcourCanvas"
+      @click="lockPointer"
   >
     <Transition name="fade">
       <button
-        v-if="canStart && !isLocked"
-        class="ParcourCanvas__startButton"
-        type="button"
+          v-if="canStart && !isLocked"
+          class="ParcourCanvas__startButton"
+          type="button"
       >
         Click to start
       </button>
@@ -19,19 +17,18 @@
 </template>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import '../bvh-raycasting.ts'
 import { nextTick, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue'
 import { useEnvMap } from '../composables/useEnvMap.ts'
 import envMapUrl from '../assets/envmap/brown_photostudio_02_1k.hdr?url'
-import { Clock, Scene } from 'three'
-import { getAll as getAllTweens, Tween, update as updateAllTweens } from '@tweenjs/tween.js'
+import { Scene, Timer } from 'three'
+import { Tween } from '@tweenjs/tween.js'
 import { useUserControls } from '../composables/useUserControls.ts'
 import { useFloorSign } from '../composables/useFloorSign.ts'
 import { useWallSign } from '../composables/useWallSign.ts'
-import { DEG2RAD } from 'three/src/math/MathUtils'
 
 import connectPosterUrl from '../assets/posters/connect_arcs.png?url'
 import gazeNavPosterUrl from '../assets/posters/gaze_navigation.png?url'
@@ -44,6 +41,8 @@ import { useNumpadLockedDoor } from '../composables/useNumpadLockedDoor.ts'
 import { useCursor } from '../stores/useCursor.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
 import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
+import { useTweenGroup } from '../composables/useTweenGroup.ts'
+import { DEG2RAD } from 'three/src/math/MathUtils'
 
 const root = shallowRef<HTMLDivElement>()
 
@@ -51,7 +50,8 @@ const canStart = shallowRef(false)
 const canvas = document.createElement('canvas')
 canvas.classList.add('ParcourCanvas__canvas')
 
-const clock = new Clock()
+const clock = new Timer()
+
 let animationFrameID: number | undefined = undefined
 
 const { camera, renderer } = useResizingRenderer(canvas)
@@ -62,7 +62,7 @@ const {
   update: updateControls,
   connect: connectControls,
   dispose: disposeControls,
-} = await useUserControls(camera, root)
+} = await useUserControls(camera)
 
 camera.position.set(-120, PLAYER_HEIGHT + 0.1, 0)
 camera.rotation.set(0, -90 * DEG2RAD, 0)
@@ -83,46 +83,51 @@ const {
   update: updateRaycastPointer,
 } = await useRaycastPointer()
 
-let stats
+let stats: Stats
 if (import.meta.env.DEV) {
   const module = await import('stats.js')
-  const Stats = module.default
-  stats = new Stats()
+  const StatsConstructor = module.default
+  stats = new StatsConstructor()
   stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom)
 }
 
 camera.add(
-  cursor,
-  iconMeshes.primary,
-  iconMeshes.secondary
+    cursor,
+    iconMeshes.primary,
+    iconMeshes.secondary
 )
 
 const { loadModel, dispose: disposeGTLFLoader } = await useGLTFLoader()
+const tweenGroup = useTweenGroup()
 
 scene.add(
-  (await loadModel('models/numbers/rooms.gltf')).scene,
+    (await loadModel('models/numbers/rooms.gltf')).scene,
 
-  ...await Promise.all([
-    useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
-    useFloorSign([-116, 0, 2], [0, -120 * DEG2RAD, 0], connectPosterUrl),
-    useFloorSign([216, 0, -2], [0, -70 * DEG2RAD, 0], thankYouPosterUrl),
-    useFloorSign([8, 0, 0], [0, -90 * DEG2RAD, 0], secondaryToJumpPosterUrl),
-    useWallSign([-103, 0, 8], [0, -90 * DEG2RAD, 0], findTheCodePosterUrl),
-    useNumpadLockedDoor([-102, 0, 0], '303909', 'door_1'),
-    useNumpadLockedDoor([0, 0, 0], '271828', 'door_2'),
-    useNumpadLockedDoor([102, 0, 0], '314159', 'door_3'),
-    useNumpadLockedDoor([204, 0, 0], '161803', 'door_4')
-  ]),
+    ...await Promise.all([
+      useFloorSign([-116, 0, -2], [0, -70 * DEG2RAD, 0], gazeNavPosterUrl),
+      useFloorSign([-116, 0, 2], [0, -120 * DEG2RAD, 0], connectPosterUrl),
+      useFloorSign([216, 0, -2], [0, -70 * DEG2RAD, 0], thankYouPosterUrl),
+      useFloorSign([8, 0, 0], [0, -90 * DEG2RAD, 0], secondaryToJumpPosterUrl),
+      useWallSign([-103, 0, 8], [0, -90 * DEG2RAD, 0], findTheCodePosterUrl),
+      useNumpadLockedDoor([-102, 0, 0], '303909', 'door_1'),
+      useNumpadLockedDoor([0, 0, 0], '271828', 'door_2'),
+      useNumpadLockedDoor([102, 0, 0], '314159', 'door_3'),
+      useNumpadLockedDoor([204, 0, 0], '161803', 'door_4')
+    ]),
 )
 
 disposeGTLFLoader()
 
-function render (time: number) {
+function render (time: DOMHighResTimeStamp) {
+  if (!isLocked) {
+    return
+  }
+
   stats?.begin()
-  const delta = clock.getDelta()
-  updateAllTweens(time)
-  updateControls(delta)
+  clock.update(time)
+  tweenGroup.update(time)
+  updateControls(clock.getDelta())
   updateRaycastPointer(camera)
   renderer.render(scene, camera)
   stats?.end()
@@ -156,7 +161,6 @@ let pausedTweens: Tween<unknown>[] = []
 watch(isLocked, (newIsLocked) => {
   if (newIsLocked && !animationFrameID) {
     animationFrameID = window.requestAnimationFrame(render)
-    clock.start()
 
     for (const tween of pausedTweens) {
       tween.resume()
@@ -168,9 +172,8 @@ watch(isLocked, (newIsLocked) => {
 
   window.cancelAnimationFrame(animationFrameID)
   animationFrameID = null
-  clock.stop()
 
-  pausedTweens = getAllTweens()
+  pausedTweens = tweenGroup.getAll()
   for (const tween of pausedTweens) {
     tween.pause()
   }
@@ -178,8 +181,8 @@ watch(isLocked, (newIsLocked) => {
 </script>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .ParcourCanvas {
   display: flex;

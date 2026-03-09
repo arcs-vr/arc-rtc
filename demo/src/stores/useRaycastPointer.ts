@@ -6,8 +6,8 @@ import { useCursor } from './useCursor.ts'
 
 type InteractiveObjectConfig = {
   maxDistance: number
-  onPrimary?: () => {}
-  onSecondary?: () => {}
+  onPrimary?: () => void
+  onSecondary?: () => void
   iconPrimary?: string
   iconSecondary?: string
 }

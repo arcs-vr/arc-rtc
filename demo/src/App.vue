@@ -1,28 +1,28 @@
 <template>
   <main
-    :data-show="isLogoPlaced"
-    class="ArcRTC"
+      :data-show="isLogoPlaced"
+      class="ArcRTC"
   >
     <Transition name="fade">
       <LoadingAnimation
-        v-if="!isLoaded"
-        ref="logo"
-        class="ArcRTC__logo"
+          v-if="!isLoaded"
+          ref="logo"
+          class="ArcRTC__logo"
       />
     </Transition>
 
     <RouterView v-slot="{ Component }">
       <Component
-        :is="Component"
-        @loaded="isLoaded = true"
+          :is="Component"
+          @loaded="isLoaded = true"
       />
     </RouterView>
   </main>
 </template>
 
 <style
-  lang="scss"
-  scoped
+    lang="scss"
+    scoped
 >
 .ArcRTC {
   align-items: center;
@@ -48,8 +48,8 @@
 </style>
 
 <script
-  lang="ts"
-  setup
+    lang="ts"
+    setup
 >
 import LoadingAnimation from './components/LoadingAnimation.vue'
 import { useRouter } from 'vue-router'
@@ -84,20 +84,20 @@ function updateLogo (instant?: boolean) {
     }
 
     logo.value.$el.animate(
-      [
+        [
+          {
+            top: `${rect.top}px`,
+            left: `${rect.left}px`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`,
+          },
+        ],
         {
-          top: `${rect.top}px`,
-          left: `${rect.left}px`,
-          width: `${rect.width}px`,
-          height: `${rect.height}px`,
-        },
-      ],
-      {
-        // timing options
-        duration: 300,
-        fill: 'forwards',
-        easing: 'ease-in-out',
-      }
+          // timing options
+          duration: 300,
+          fill: 'forwards',
+          easing: 'ease-in-out',
+        }
     )
   }
 }
