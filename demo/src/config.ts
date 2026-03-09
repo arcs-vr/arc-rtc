@@ -27,5 +27,5 @@ export const eventIdToName = new Map<number, string>([
 export const eventNameToId = new Map<string, number>(
   Array
     .from(eventIdToName.entries())
-    .map(entry => entry.reverse())
+    .map(entry => entry.reverse()) as [string, number][]
 )

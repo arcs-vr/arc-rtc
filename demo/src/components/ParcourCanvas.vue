@@ -85,8 +85,8 @@ const {
 
 let stats: Stats
 if (import.meta.env.DEV) {
-  const module = await import('stats.js')
-  const StatsConstructor = module.default
+  //@ts-expect-error default import does exist
+  const { default: StatsConstructor } = await import('stats.js')
   stats = new StatsConstructor()
   stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom)

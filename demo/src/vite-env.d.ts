@@ -23,6 +23,13 @@ declare module 'three' {
     boundsTree?: MeshBVH;
     computeBoundsTree: typeof computeBoundsTree;
     disposeBoundsTree: typeof disposeBoundsTree;
+    hasBVH: boolean;
+  }
+}
+
+declare module 'three' {
+  export interface Mesh {
+    hasBVH: boolean;
   }
 }
 

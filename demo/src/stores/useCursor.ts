@@ -89,6 +89,19 @@ export const useCursor = defineStore(async () => {
   iconTextures.set('swap', swapIcon)
   iconTextures.set('upgrade', jumpIcon)
 
+  function cleanupIconTween(which: 'primary' | 'secondary') {
+    if (iconTweens[which]) {
+      iconTweens[which].stop()
+      tweenGroup.remove(iconTweens[which])
+      iconTweens[which] = null
+    }
+  }
+
+  function registerIconTween(which: 'primary' | 'secondary', tween: Tween<any>) {
+    iconTweens[which] = tween
+    tweenGroup.add(tween)
+  }
+
   function setIcon (which: 'primary' | 'secondary', icon: string) {
     const mesh = iconMeshes[which]
     const texture = iconTextures.get(icon)
@@ -101,22 +114,17 @@ export const useCursor = defineStore(async () => {
     mesh.material.map = texture
     mesh.material.needsUpdate = true
 
-    if (iconTweens[which]){
-      iconTweens[which].stop()
-      tweenGroup.remove(iconTweens[which])
-    }
+    cleanupIconTween(which)
 
     const newTween = new Tween(mesh.material)
       .to({ opacity: 0.75 }, ICON_ANIMATION_DURATION)
       .easing(ICON_EASING)
       .onComplete(() => {
-        iconTweens[which] = null
-        tweenGroup.remove(newTween)
+        cleanupIconTween(which)
       })
       .start()
 
-    iconTweens[which] = newTween
-    tweenGroup.add(newTween)
+    registerIconTween(which, newTween)
   }
 
   function clearIcon (which: 'primary' | 'secondary') {
@@ -125,10 +133,7 @@ export const useCursor = defineStore(async () => {
       return
     }
 
-    if (iconTweens[which]){
-      iconTweens[which].stop()
-      tweenGroup.remove(iconTweens[which])
-    }
+    cleanupIconTween(which)
 
     const newTween = new Tween(mesh.material)
       .to({ opacity: 0 }, ICON_ANIMATION_DURATION)
@@ -137,13 +142,11 @@ export const useCursor = defineStore(async () => {
         mesh.material.map = null
         mesh.material.needsUpdate = true
         mesh.visible = false
-        iconTweens[which] = null
-        tweenGroup.remove(newTween)
+        cleanupIconTween(which)
       })
       .start()
 
-    iconTweens[which] = newTween
-    tweenGroup.add(newTween)
+    registerIconTween(which, newTween)
   }
 
   function animateClick () {
