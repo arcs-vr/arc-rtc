@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/arc-rtc.iml" filepath="$PROJECT_DIR$/.idea/arc-rtc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../architecture-public/.idea/architecture-public.iml" filepath="$PROJECT_DIR$/../architecture-public/.idea/architecture-public.iml" />
     </modules>
   </component>
 </project>

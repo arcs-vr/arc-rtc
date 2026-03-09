@@ -19,6 +19,9 @@
             alt=""
         />
       </output>
+
+      <p>Alternatively, open this URL on your other device:</p>
+      <a :href="url">{{url}}</a>
     </div>
 
     <button
@@ -39,6 +42,7 @@ import { PEER_STATUS } from '../config.ts'
 
 defineProps<{
   qrData: string
+  url: string
   status: PEER_STATUS
 }>()
 

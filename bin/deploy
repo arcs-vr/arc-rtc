@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rsync -avz demo/dist/ barthy@barthy.koeln:/home/barthy/architecture-public/caddy/static/arcs --exclude=.DS_Store

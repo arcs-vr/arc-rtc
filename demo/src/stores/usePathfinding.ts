@@ -18,7 +18,7 @@ export const usePathfinding = defineStore(async () => {
   const intersections: Intersection[] = []
 
   /**
-   * Target is next player body position at feet
+   * Target is the next player body's position at feet
    */
   function allowStep (target: Vector3, pointOnMesh: Vector3) {
     raycaster.set(target, down)
@@ -29,7 +29,7 @@ export const usePathfinding = defineStore(async () => {
       return false
     }
 
-    if ((intersections[0].object as Mesh).material.name !== 'nav_mesh_walkable') {
+    if (((intersections[0].object as Mesh).material as Material).name !== 'nav_mesh_walkable') {
       return false
     }
 
@@ -45,8 +45,8 @@ export const usePathfinding = defineStore(async () => {
     }
   }
 
-  navMeshes = gltf.scene.children
-  materialWalkable = gltf.scene.getObjectByName('rooms').material
+  navMeshes = gltf.scene.children as Mesh[]
+  materialWalkable = (gltf.scene.getObjectByName('rooms') as Mesh).material as Material
 
   for (const mesh of navMeshes) {
     mesh.geometry.computeBoundsTree()

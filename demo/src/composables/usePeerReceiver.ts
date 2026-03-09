@@ -9,7 +9,10 @@ export function usePeerReceiver () {
   let peer: Peer
 
   function connect () {
-    peer = new Peer(id.value, { secure: true })
+    peer = new Peer(id.value, {
+      secure: true,
+      path: '/peerjs'
+    })
 
     peer.on('open', () => {
       status.value = PEER_STATUS.READY_TO_CONNECT

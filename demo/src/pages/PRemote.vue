@@ -132,7 +132,7 @@ function onQRScanned (result: QrScanner.ScanResult) {
   }
 }
 
-function onSendEvent ({ eventName, details }: { eventName: string, details: unknown }) {
+function onSendEvent (eventName: string, details: unknown) {
   send(eventName, details)
 }
 </script>

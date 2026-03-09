@@ -9,7 +9,10 @@ export function usePeerEmitter () {
 
   function connect (secret: string) {
     peer?.destroy()
-    peer = new Peer({ secure: true })
+    peer = new Peer({
+      secure: true,
+      path: '/peerjs'
+    })
 
     peer.on('open', () => {
       status.value = PEER_STATUS.READY_TO_CONNECT

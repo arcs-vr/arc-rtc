@@ -19,6 +19,7 @@
     <ConnectionModal
         v-if="isConnectionModalOpen && qrData"
         :qr-data="qrData"
+        :url="url"
         :status="status"
         @close="onConnectionModalClose"
     />
@@ -58,7 +59,6 @@ const {
   status,
   url,
   connect,
-  disconnect,
   destroy
 } = usePeerReceiver()
 
@@ -82,8 +82,6 @@ function onConnectionModalClose () {
     destroy()
     return
   }
-
-  disconnect()
 }
 </script>
 
