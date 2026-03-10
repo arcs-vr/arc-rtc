@@ -16,7 +16,6 @@
       <div
           ref="cursor"
           :data-animated="cursorPosition[0] === 0 && cursorPosition[1] === 0"
-          :style="cursorTransform"
           class="ArcJoystick__cursor"
       />
     </div>
@@ -52,12 +51,16 @@ let joystickBounds: { width: number, height: number } | null = null
 
 let currentHold: Touch | null = null
 const cursorPosition = shallowRef([0, 0])
-const cursorTransform = computed(() => `transform: translate(${cursorPosition.value[0]}px, ${cursorPosition.value[1]}px)`)
-const gradientPoints = 10
-const gradient = computed(() => `radial-gradient(closest-side, ${Array(gradientPoints).fill(0).map((_, i) => `hsl(0deg 0% ${props.easing(i / (gradientPoints - 1)) * 20}%)`).join(', ')})`)
+const gradient = computed(() => {
+  const gradientPoints = 10
+  const points = Array(gradientPoints)
+      .fill(0)
+      .map((_, i) => `hsl(0deg 0% ${props.easing(i / (gradientPoints - 1)) * 20}%)`)
+      .join(', ')
 
-let lastUpdate = 0
-let now = 0
+  return `radial-gradient(closest-side, ${points})`
+})
+
 let resizeObserver: ResizeObserver | null = null
 
 onMounted(async () => {
@@ -91,29 +94,34 @@ function absMin (first: number, second: number) {
 }
 
 function updateMovement (event: TouchEvent) {
-  currentHold = Array.from(event.touches).find(event => (event.target as HTMLElement).id === props.id)
-  cursorPosition.value = [
-    absMin(currentHold.clientX - centerOfJoystick.clientX, joystickBounds.width),
-    absMin(currentHold.clientY - centerOfJoystick.clientY, joystickBounds.height)
-  ]
+  for (const touch of event.touches) {
+    if ((event.target as HTMLElement).id !== props.id) {
+      continue
+    }
 
-  now = performance.now()
-  if (now - lastUpdate > 33) {
-    lastUpdate = now
-
-    emit(
-        'update',
-        [
-          props.easing(cursorPosition.value[0] / joystickBounds.width),
-          props.easing(cursorPosition.value[1] / joystickBounds.height)
-        ]
+    currentHold = touch
+    updateTransform(
+      absMin(currentHold.clientX - centerOfJoystick.clientX, joystickBounds.width),
+      absMin(currentHold.clientY - centerOfJoystick.clientY, joystickBounds.height)
     )
   }
 }
 
 function stopMovement () {
-  cursorPosition.value = [0, 0]
+  updateTransform(0, 0)
   emit('update', [0, 0])
+}
+
+function updateTransform(x: number, y: number) {
+  cursorPosition.value = [x, y]
+  cursor.value.style.transform = `translate3d(${x}px, ${y}px, 0)`
+  emit(
+      'update',
+      [
+        props.easing(x / joystickBounds.width),
+        props.easing(y / joystickBounds.height)
+      ]
+  )
 }
 </script>
 
