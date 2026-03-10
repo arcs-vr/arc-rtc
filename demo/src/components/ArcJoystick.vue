@@ -104,6 +104,9 @@ function updateMovement (event: TouchEvent) {
       absMin(currentHold.clientX - centerOfJoystick.clientX, joystickBounds.width),
       absMin(currentHold.clientY - centerOfJoystick.clientY, joystickBounds.height)
     )
+
+    // only use the first match
+    return
   }
 }
 
