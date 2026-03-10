@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "demo",
-    "design"
+    "design",
+    "server"
   ],
   "scripts": {
     "demo:dev": "yarn workspace @arcs/demo run dev --host",

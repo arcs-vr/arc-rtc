@@ -7,32 +7,49 @@ export function usePeerEmitter () {
   let conn: DataConnection
   const status = shallowRef<PEER_STATUS>(PEER_STATUS.NOT_CONNECTED)
 
-  function connect (secret: string) {
+  async function getSession (): Promise<void> {
+    await fetch('/session', {
+      credentials: 'include',
+      method: 'GET',
+    })
+  }
+
+  async function connect (secret: string) {
     peer?.destroy()
-    peer = new Peer({
-      secure: true,
-      host: window.location.host,
-      path: '/peerjs'
-    })
+    peer = null
 
-    peer.on('open', () => {
-      status.value = PEER_STATUS.READY_TO_CONNECT
+    try {
+      await getSession()
 
-      conn = peer.connect(secret, { reliable: true })
-
-      conn.on('open', function () {
-        status.value = PEER_STATUS.CONNECTED
+      peer = new Peer({
+        secure: true,
+        host: window.location.host,
+        path: '/'
       })
 
-      conn.on('error', function (err) {
-        status.value = PEER_STATUS.NOT_CONNECTED
-        console.error(err)
+      peer.on('open', () => {
+        status.value = PEER_STATUS.READY_TO_CONNECT
+
+        conn = peer.connect(secret, { reliable: true })
+
+        conn.on('open', function () {
+          status.value = PEER_STATUS.CONNECTED
+        })
+
+        conn.on('error', function (err) {
+          status.value = PEER_STATUS.NOT_CONNECTED
+          console.error(err)
+        })
+
+        conn.on('close', function () {
+          status.value = PEER_STATUS.NOT_CONNECTED
+        })
       })
 
-      conn.on('close', function () {
-        status.value = PEER_STATUS.NOT_CONNECTED
-      })
-    })
+    } catch(error) {
+      console.error('Failed to get session:', error)
+      status.value = PEER_STATUS.NOT_CONNECTED
+    }
   }
 
   function send (eventName: string, details: unknown) {

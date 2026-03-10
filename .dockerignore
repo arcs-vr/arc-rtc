@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Node modules
+node_modules
+
+# Build outputs
+dist
+build
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# Environment
+.env
+.env.*
+
+# Yarn
+.yarn/cache/*.zip
+!.yarn/cache/.yarn-integrity
+
+# Testing
+coverage
+.nyc_output

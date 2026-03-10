@@ -8,11 +8,25 @@ export function usePeerReceiver () {
   const status = shallowRef<PEER_STATUS>(PEER_STATUS.NOT_CONNECTED)
   let peer: Peer
 
-  function connect () {
+  async function getSession (): Promise<void> {
+    await fetch('/session', {
+      credentials: 'include',
+      method: 'GET',
+    })
+  }
+
+  async function connect () {
+    await getSession()
+
     peer = new Peer(id.value, {
       secure: true,
       host: window.location.host,
-      path: '/peerjs'
+      path: '/'
+    })
+
+    peer.on('error', (err) => {
+      console.error('PeerJS error:', err)
+      status.value = PEER_STATUS.NOT_CONNECTED
     })
 
     peer.on('open', () => {
