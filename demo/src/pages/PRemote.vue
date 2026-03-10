@@ -142,6 +142,10 @@ function onSendEvent (eventName: string, details: unknown) {
     scoped
 >
 .PRemote {
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
 
   &__animation {
     width: 250px;

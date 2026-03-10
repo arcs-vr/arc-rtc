@@ -76,6 +76,7 @@ function lookEasing (a: number) {
     "move move primary look look";
   position: fixed;
   inset: 0;
+  overflow: hidden;
 
   &__move,
   &__look,
