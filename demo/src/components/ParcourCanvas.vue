@@ -36,13 +36,17 @@ import thankYouPosterUrl from '../assets/posters/thank_you.png?url'
 import findTheCodePosterUrl from '../assets/posters/find_the_code.png?url'
 import secondaryToJumpPosterUrl from '../assets/posters/secondary_to_jump.png?url'
 import { useResizingRenderer } from '../composables/useResizingRenderer.ts'
-import { PLAYER_HEIGHT } from '../config.ts'
+import { PEER_STATUS, PLAYER_HEIGHT } from '../config.ts'
 import { useNumpadLockedDoor } from '../composables/useNumpadLockedDoor.ts'
 import { useCursor } from '../stores/useCursor.ts'
 import { useRaycastPointer } from '../stores/useRaycastPointer.ts'
 import { useGLTFLoader } from '../stores/useGLTFLoader.ts'
 import { useTweenGroup } from '../composables/useTweenGroup.ts'
 import { DEG2RAD } from 'three/src/math/MathUtils'
+
+const props = defineProps<{
+  connectionStatus: PEER_STATUS
+}>()
 
 const root = shallowRef<HTMLDivElement>()
 
@@ -177,6 +181,18 @@ watch(isLocked, (newIsLocked) => {
   for (const tween of pausedTweens) {
     tween.pause()
   }
+})
+
+watch(() => props.connectionStatus, (newValue) => {
+  if (newValue !== PEER_STATUS.CONNECTED) {
+    return
+  }
+
+  if (isLocked.value) {
+    return
+  }
+
+  lockPointer()
 })
 </script>
 

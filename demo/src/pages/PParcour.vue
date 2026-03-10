@@ -4,7 +4,7 @@
       name="fade"
   >
     <Suspense @resolve="emit('loaded')">
-      <ParcourCanvas/>
+      <ParcourCanvas :connection-status="status"/>
 
       <template #fallback>
         <div
@@ -65,9 +65,17 @@ const {
 const qrData = useQRCode(url)
 
 watch(status, (newStatus) => {
-  if (newStatus === PEER_STATUS.CONNECTED && isConnectionModalOpen.value) {
-    setTimeout(() => { isConnectionModalOpen.value = false }, 1_000)
+  if (newStatus !== PEER_STATUS.CONNECTED) {
+    return
   }
+
+  if (!isConnectionModalOpen.value) {
+    return
+  }
+
+  setTimeout(() => {
+    isConnectionModalOpen.value = false
+  }, 1_000)
 })
 
 function openModal () {
