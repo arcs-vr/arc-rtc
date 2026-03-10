@@ -21,7 +21,7 @@
       </output>
 
       <p>Alternatively, open this URL on your other device:</p>
-      <a :href="url">{{url}}</a>
+      <a :href="url" target="_blank">{{url}}</a>
     </div>
 
     <button

@@ -11,6 +11,7 @@ export function usePeerEmitter () {
     peer?.destroy()
     peer = new Peer({
       secure: true,
+      host: window.location.host,
       path: '/peerjs'
     })
 
