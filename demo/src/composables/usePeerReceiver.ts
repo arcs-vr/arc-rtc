@@ -11,7 +11,8 @@ export function usePeerReceiver () {
   function connect () {
     peer = new Peer(id.value, {
       secure: true,
-      host: window.location.host
+      host: window.location.host,
+      path: '/peerjs'
     })
 
     peer.on('open', () => {
