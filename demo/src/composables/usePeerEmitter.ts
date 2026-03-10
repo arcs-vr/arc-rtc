@@ -18,7 +18,7 @@ export function usePeerEmitter () {
     peer.on('open', () => {
       status.value = PEER_STATUS.READY_TO_CONNECT
 
-      conn = peer.connect(secret)
+      conn = peer.connect(secret, { reliable: true })
 
       conn.on('open', function () {
         status.value = PEER_STATUS.CONNECTED
