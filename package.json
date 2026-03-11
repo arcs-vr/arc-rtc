@@ -9,5 +9,11 @@
     "demo:dev": "yarn workspace @arcs/demo run dev --host",
     "demo:build": "yarn workspace @arcs/demo build"
   },
-  "packageManager": "yarn@4.13.0"
+  "packageManager": "yarn@4.13.0",
+  "dependencies": {
+    "express-session": "^1.19.0"
+  },
+  "devDependencies": {
+    "@types/express-session": "^1.18.2"
+  }
 }

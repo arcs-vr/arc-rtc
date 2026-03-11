@@ -16,3 +16,5 @@ logs
 
 # and uncomment the following lines
 # .pnp.*
+
+node_modules
