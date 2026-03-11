@@ -11,6 +11,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
     "peer": "^1.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

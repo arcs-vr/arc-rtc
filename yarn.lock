@@ -51,6 +51,7 @@ __metadata:
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.6"
     express: "npm:^5.2.1"
+    express-rate-limit: "npm:^8.3.1"
     peer: "npm:^1.0.2"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
@@ -1914,6 +1915,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"express-rate-limit@npm:^8.3.1":
+  version: 8.3.1
+  resolution: "express-rate-limit@npm:8.3.1"
+  dependencies:
+    ip-address: "npm:10.1.0"
+  peerDependencies:
+    express: ">= 4.11"
+  checksum: 10/dd97bfc48c01a6d4c5433203232b5e7a1e55e21322bde49033e5f8c4339584fe671a94096144a0810f4ea21dcec8aaaf15823109627e609f8ed1bc5912a345cf
+  languageName: node
+  linkType: hard
+
 "express@npm:^4.17.1":
   version: 4.22.1
   resolution: "express@npm:4.22.1"
@@ -2346,6 +2358,13 @@ __metadata:
   version: 2.0.4
   resolution: "inherits@npm:2.0.4"
   checksum: 10/cd45e923bee15186c07fa4c89db0aace24824c482fb887b528304694b2aa6ff8a898da8657046a5dcf3e46cd6db6c61629551f9215f208d7c3f157cf9b290521
+  languageName: node
+  linkType: hard
+
+"ip-address@npm:10.1.0":
+  version: 10.1.0
+  resolution: "ip-address@npm:10.1.0"
+  checksum: 10/a6979629d1ad9c1fb424bc25182203fad739b40225aebc55ec6243bbff5035faf7b9ed6efab3a097de6e713acbbfde944baacfa73e11852bb43989c45a68d79e
   languageName: node
   linkType: hard
 
